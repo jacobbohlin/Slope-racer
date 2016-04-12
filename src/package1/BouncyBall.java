@@ -10,8 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import com.sun.javafx.Utils;
-
 public class BouncyBall {
 	//JavaFX UI for ball
     public Node node;
