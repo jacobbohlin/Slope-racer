@@ -10,7 +10,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -28,8 +30,16 @@ public class BouncyBallApp extends Application {
         Group root = new Group(); //Create a group for holding all objects on the screen
         Scene scene = new Scene(root, Utility.WIDTH, Utility.HEIGHT);
         
+        StackPane holder = new StackPane();
+        Canvas canvas = new Canvas(800, 650);
+
+        holder.getChildren().add(canvas);
+        root.getChildren().add(holder);
+
+        holder.setStyle("-fx-background-color: black");
+        
       //create ball   
-        final BouncyBall ball = new BouncyBall(45, 90, Utility.BALL_RADIUS, Color.RED);
+        final BouncyBall ball = new BouncyBall(10, 90, Utility.BALL_RADIUS, Color.RED);
           
         //Add ground to the application, this is where balls will land
         Utility.addGround(100, 10);
@@ -37,6 +47,8 @@ public class BouncyBallApp extends Application {
         //Add left and right walls so balls will not move outside the viewing area.
         Utility.addWall(0,100,1,100); //Left wall
         Utility.addWall(99,100,1,100); //Right wall
+        
+        Utility.addSlope(0, 50, 100, 1);
 
         final Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -68,6 +80,7 @@ public class BouncyBallApp extends Application {
  
         timeline.getKeyFrames().add(frame);
         
+        Utility.world.drawDebugData();
       //Create button to start simulation.
         final Button btn = new Button();
         btn.setLayoutX((Utility.WIDTH/2) -15);

@@ -1,5 +1,7 @@
 package package1;
 
+
+import org.jbox2d.collision.shapes.EdgeShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
@@ -10,7 +12,7 @@ import org.jbox2d.dynamics.World;
 
 public class Utility{
 	//Create a JBox2D world. 
-	public static final World world = new World(new Vec2(0.0f, -10.0f), true);
+	public static final World world = new World(new Vec2(0.0f, -100.0f));
      
     //Screen width and height
     public static final int WIDTH = 600;
@@ -28,9 +30,24 @@ public class Utility{
         fd.shape = ps;
      
         BodyDef bd = new BodyDef();
-        bd.position= new Vec2(0.0f,-10f);
+        bd.position = new Vec2(0.0f,-10f);
      
         world.createBody(bd).createFixture(fd);
+    }
+    
+    public static void addSlope(float startPosX, float startPosY, float width, float height){
+    	EdgeShape shape = new EdgeShape();
+    	shape.set(new Vec2(20f, 0.0f), new Vec2(30f, -0.25f));
+             
+        FixtureDef fd = new FixtureDef();
+        fd.shape = shape;
+        fd.density = 1.0f;
+        fd.friction = 0.3f;    
+     
+        BodyDef bd = new BodyDef();
+        bd.position.set(startPosX, startPosY);
+        
+        Utility.world.createBody(bd).createFixture(fd);
     }
     
   //This method creates a walls. 
