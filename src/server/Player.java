@@ -42,5 +42,8 @@ public class Player {
 	 */
 	public int getMouseY() {return mouseY;}
 	
-	
+	/**
+	 * @return the UDP-Port of this player.
+	 */
+	public int getPort() {return port;}
 }
