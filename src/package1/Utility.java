@@ -12,7 +12,7 @@ import org.jbox2d.dynamics.World;
 
 public class Utility{
 	//Create a JBox2D world. 
-	public static final World world = new World(new Vec2(0.0f, -100.0f));
+	public static final World world = new World(new Vec2(0.0f, -100.0f), true);
      
     //Screen width and height
     public static final int WIDTH = 600;
