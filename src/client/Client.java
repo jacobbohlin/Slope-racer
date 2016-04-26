@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class Client {
 	private DatagramSocket socket;
@@ -81,5 +82,8 @@ public class Client {
 				}
 			}
 		}
+	}
+	public static void main(String args[]) throws UnknownHostException{
+		Client per = new Client(new ClientGUI(), InetAddress.getLocalHost(), 8888, "Per");
 	}
 }

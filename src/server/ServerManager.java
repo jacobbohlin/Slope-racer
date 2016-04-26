@@ -12,9 +12,10 @@ public class ServerManager {
 	private GameWorld world;
 	private ServerGUI gui;
 	
-	public ServerManager(ServerGUI gui) {
-		this.gui = gui;
+	public ServerManager() {
+//		this.gui = gui;
 		connector = new ClientConnector();
+		connector.start();
 		world = new GameWorld();
 		 //Frame events.
         final Timeline timeline = new Timeline();
@@ -28,7 +29,8 @@ public class ServerManager {
             public void handle(ActionEvent t) {
                 //What happens every frame.
             	//World.step bland annat. 	
-            	connector.willSend();
+            	System.out.println("hej");
+            	connector.willSendUpdate = true;
            }
         };
  
@@ -41,5 +43,8 @@ public class ServerManager {
         
         //Start the timeline.
         timeline.playFromStart();
+	}
+	public static void main(String args[]){
+		ServerManager man = new ServerManager();
 	}
 }
