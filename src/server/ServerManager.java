@@ -28,8 +28,7 @@ public class ServerManager {
             public void handle(ActionEvent t) {
                 //What happens every frame.
             	//World.step bland annat. 	
-            	//Set connector.Wills = true
-            	
+            	connector.willSend();
            }
         };
  

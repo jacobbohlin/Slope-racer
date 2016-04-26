@@ -77,6 +77,7 @@ public class ClientConnector extends Thread {
 		}
 		willSendUpdate = false;
 	}
+
 	
 	private void sendAck(Player p){
 		String message = "ACK;" + p.getPlayerNbr();
@@ -90,5 +91,6 @@ public class ClientConnector extends Thread {
 			e.printStackTrace();
 		}
 	}
+
 
 }
