@@ -66,5 +66,4 @@ public class ClientConnector extends Thread {
 		}
 		willSendUpdate = false;
 	}
-
 }
