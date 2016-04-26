@@ -3,15 +3,16 @@ package server;
 import java.net.InetAddress;
 
 public class Player {
-	private InetAddress ip;
 	private int port;
 	private String name;
+	private InetAddress ip;
 	private int mouseX, mouseY;
+	private final int playerNbr;
+	private static int nextPlayerNbr = 0;
 	
 	/**
 	 * Constructs a player.
 	 * @param name, Name of this player.
-	 * @param ip, Ip-address of this player.
 	 * @param port, UDP port of this player.
 	 */
 	public Player(String name, InetAddress ip, int port) {
@@ -20,6 +21,7 @@ public class Player {
 		this.port = port;
 		mouseX = 50;
 		mouseY = 50;
+		playerNbr = nextPlayerNbr++;
 	}
 	
 	/**
@@ -46,4 +48,12 @@ public class Player {
 	 * @return the UDP-Port of this player.
 	 */
 	public int getPort() {return port;}
+	
+	/**
+	 * 
+	 * @return the playerNbr of this playa~.
+	 */
+	public int getPlayerNbr() {return playerNbr;}
+
+	public InetAddress getAdress() {return ip;}
 }
