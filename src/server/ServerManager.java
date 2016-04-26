@@ -8,13 +8,13 @@ import javafx.util.Duration;
 
 
 public class ServerManager {
-	private PlayerConnector connector;
+	private ClientConnector connector;
 	private GameWorld world;
 	private ServerGUI gui;
 	
 	public ServerManager(ServerGUI gui) {
 		this.gui = gui;
-		connector = new PlayerConnector();
+		connector = new ClientConnector();
 		world = new GameWorld();
 		 //Frame events.
         final Timeline timeline = new Timeline();
@@ -28,7 +28,7 @@ public class ServerManager {
             public void handle(ActionEvent t) {
                 //What happens every frame.
             	//World.step bland annat. 	
-            	//Set connector.WillSendUpdate = true
+            	//Set connector.Wills = true
             	
            }
         };
