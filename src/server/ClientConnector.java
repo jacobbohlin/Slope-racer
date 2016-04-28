@@ -18,11 +18,12 @@ public class ClientConnector extends Thread {
 	private DatagramPacket dp;
 
 	public ClientConnector() {
-		willSendUpdate = false;
+		willSendUpdate = true;
 		dp = new DatagramPacket(new byte[1000], 1000);
 		try {
 			socket = new DatagramSocket(8888);
 		} catch (SocketException e) {
+			System.out.println("Could not create socket");
 			e.printStackTrace();
 		}
 
@@ -32,7 +33,7 @@ public class ClientConnector extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				if (willSendUpdate) {
+				if (willSendUpdate && !players.isEmpty()) {
 					send();
 				}
 				socket.receive(dp);
@@ -52,6 +53,7 @@ public class ClientConnector extends Thread {
 	private void connect(String nickName) {
 		players.put(dp.getAddress(), new Player(nickName, dp.getAddress(), dp.getPort()));
 		Player p = players.get(dp.getAddress());
+		System.out.println("Player " + p.getPlayerNbr() + " has connected");
 		sendAck(p);
 	}
 
@@ -65,15 +67,15 @@ public class ClientConnector extends Thread {
 	}
 
 	private void send() throws IOException {
-		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-		ObjectOutput oo = new ObjectOutputStream(bStream);
-		oo.writeObject(GameWorld.playerData);
-		byte[] buf = bStream.toByteArray();
-		dp.setData(buf);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(GameWorld.playerData);
+		byte[] buf = baos.toByteArray();
+		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
-			dp.setAddress(e.getKey());
-			dp.setPort(e.getValue().getPort());
-			socket.send(dp);
+			packet.setAddress(e.getKey());
+			packet.setPort(e.getValue().getPort());
+			socket.send(packet);
 		}
 		willSendUpdate = false;
 	}
