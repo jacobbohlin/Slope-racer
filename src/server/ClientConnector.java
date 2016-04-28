@@ -17,6 +17,7 @@ public class ClientConnector extends Thread {
 	public boolean willSendUpdate;
 	private DatagramPacket dp;
 
+
 	public ClientConnector() {
 		willSendUpdate = true;
 		dp = new DatagramPacket(new byte[1000], 1000);
@@ -36,11 +37,16 @@ public class ClientConnector extends Thread {
 				if (willSendUpdate && !players.isEmpty()) {
 					send();
 				}
+				dp = new DatagramPacket(new byte[1000], 1000);
 				socket.receive(dp);
+				System.out.println("Received packet");
 				String input = new String(dp.getData(), 0, dp.getLength());
+				System.out.println(dp.getData());
+				System.out.println(input);
 				if (input.startsWith("update;")) {
 					update(input.substring(8));
 				} else if (input.startsWith("connect;")) {
+					System.out.println("A new client is trying to connect.");
 					connect(input.substring(8));
 				}
 
@@ -51,9 +57,13 @@ public class ClientConnector extends Thread {
 	}
 
 	private void connect(String nickName) {
+		if(players.containsKey(dp.getAddress())){
+			System.out.println("That IP has already connected");
+		} else {
 		players.put(dp.getAddress(), new Player(nickName, dp.getAddress(), dp.getPort()));
+		System.out.println("A new player has connected");
+		}
 		Player p = players.get(dp.getAddress());
-		System.out.println("Player " + p.getPlayerNbr() + " has connected");
 		sendAck(p);
 	}
 
@@ -86,6 +96,7 @@ public class ClientConnector extends Thread {
 		dp.setData(message.getBytes());
 		dp.setAddress(p.getAdress());
 		dp.setPort(p.getPort());
+		System.out.println(p.getPort());
 		try {
 			socket.send(dp);
 		} catch (IOException e) {

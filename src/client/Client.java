@@ -6,6 +6,8 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -53,6 +55,7 @@ public class Client {
 		connect.setPort(port);
 		try {
 			socket.send(connect);
+			System.out.println("Trying to connect...");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -70,10 +73,10 @@ public class Client {
 			for (;;) {
 				try {
 					socket.receive(response);
+					String s = new String(response.getData(), 0, response.getLength());
 					
 					//This happens while the connection is not yet established and the client is waiting for ACK.
 					if(!connected) {
-						String s = new String(response.getData(), 0, response.getLength());
 						if(s.startsWith("ACK")) {
 							id = Integer.parseInt(s.split(";")[1]);
 							System.out.println("FEEDBACKZZ");
@@ -82,7 +85,7 @@ public class Client {
 							System.out.println("Connection DENIED!");
 						}
 						//End of connection-process.
-					} else {
+					} else if (!s.startsWith("ACK")){
 						ByteArrayInputStream bais = new ByteArrayInputStream(buf);
 						ObjectInputStream ois = new ObjectInputStream(bais);
 						try {
@@ -112,6 +115,7 @@ public class Client {
 	}
 	
 	public static void main(String args[]) throws UnknownHostException{
-		Client per = new Client(new ClientGUI(), InetAddress.getLocalHost(), 8888, "Per");
+		int port = 8888;
+		Client per = new Client(new ClientGUI(), InetAddress.getLocalHost(), port, "Per");
 	}
 }
