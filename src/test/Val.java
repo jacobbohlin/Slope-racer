@@ -8,6 +8,6 @@ public class Val {
 	public static World world;
 	
 	public static void createWorld() {
-		world = new World(new Vec2(0.0f, 10.0f));	
+		world = new World(new Vec2(0.0f, 10.0f), true);	
 	}
 }

@@ -78,7 +78,7 @@ public class TestApplication extends Application {
         sprite.setFill(Color.BLUE);
         
         CircleShape shape = new CircleShape();
-        shape.setRadius(15 / Val.RATIO);
+//        (shape).setRadius(15 / Val.RATIO);
         
         FixtureDef shapeDef = new FixtureDef();
         shapeDef.shape = shape;
