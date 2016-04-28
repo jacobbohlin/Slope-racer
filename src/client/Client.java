@@ -57,6 +57,9 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+	private void sendUpdate(){
+		//TODO
+	}
 
 	private class Runner extends Thread {
 
@@ -94,6 +97,8 @@ public class Client {
 							System.out.println("Could not recreate float matrix");
 							e.printStackTrace();
 						}
+						sendUpdate();
+						
 					}
 					
 					
@@ -103,7 +108,9 @@ public class Client {
 				}
 			}
 		}
+		
 	}
+	
 	public static void main(String args[]) throws UnknownHostException{
 		Client per = new Client(new ClientGUI(), InetAddress.getLocalHost(), 8888, "Per");
 	}
