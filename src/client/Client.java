@@ -81,6 +81,7 @@ public class Client {
 							id = Integer.parseInt(s.split(";")[1]);
 							System.out.println("FEEDBACKZZ");
 							connected = true;
+							System.out.println("My player id is: " + id);
 						} else {
 							System.out.println("Connection DENIED!");
 						}
