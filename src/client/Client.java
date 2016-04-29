@@ -61,7 +61,16 @@ public class Client {
 		}
 	}
 	private void sendUpdate(){
-		//TODO
+//		mouseX = gui.getMouseX();
+//		mouseY = gui.getMouseY();
+		dp = new DatagramPacket(new byte[1000], 1000);
+		dp.setData(("update;" + mouseX + ";" + mouseY).getBytes());
+		try {
+			socket.send(dp);
+		} catch (IOException e) {
+			System.out.println("Could not send update to server");
+			e.printStackTrace();
+		}
 	}
 
 	private class Runner extends Thread {

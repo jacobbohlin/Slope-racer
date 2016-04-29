@@ -71,7 +71,6 @@ public class ClientConnector extends Thread {
 		int mouseX = Integer.parseInt(inputArray[0]);
 		int mouseY = Integer.parseInt(inputArray[1]);
 		players.get(dp.getAddress()).setMousePos(mouseX, mouseY);
-
 	}
 
 	private void send() throws IOException {
