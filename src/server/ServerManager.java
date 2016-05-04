@@ -1,13 +1,12 @@
 package server;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.util.Duration;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
-public class ServerManager {
+public class ServerManager extends TimerTask {
 	private ClientConnector connector;
 	private GameWorld world;
 	private ServerGUI gui;
@@ -16,35 +15,38 @@ public class ServerManager {
 //		this.gui = gui;
 		connector = new ClientConnector();
 		connector.start();
-		world = new GameWorld();
-		 //Frame events.
-        final Timeline timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        
-        Duration duration = Duration.seconds(1.0/30.0); // Set duration for frame, 30fps.
-        
-        //Create an ActionEvent, on trigger it executes a world time step.
-        EventHandler<ActionEvent> ae = new EventHandler<ActionEvent>() {
-        	
-            public void handle(ActionEvent t) {
-                //What happens every frame.
-            	//World.step bland annat. 	
-            	System.out.println("hej");
-            	connector.willSendUpdate = true;
-           }
-        };
- 
-         /**
-         * Set ActionEvent and duration to the KeyFrame. 
-         * The ActionEvent is trigged when KeyFrame execution is over. 
-         */
-        KeyFrame frame = new KeyFrame(duration, ae, null,null);
-        timeline.getKeyFrames().add(frame);
-        
-        //Start the timeline.
-        timeline.playFromStart();
+	}
+	
+	public void startScanning(){
+		Scanner scan = new Scanner(System.in);
+		String s = scan.nextLine();
+		if(s.equals("start")){
+			scan.close();
+			System.out.println("Lets get ready to rumble!");
+			startGame();
+		}
+	}
+	
+	@Override
+	public void run() {
+       	world.step();
+       	try {
+			connector.send();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	private void startGame(){
+		world = new GameWorld(connector.getPlayers());
+		Timer timer = new Timer();
+		timer.schedule(this, 0, 33);
 	}
 	public static void main(String args[]){
 		ServerManager man = new ServerManager();
+		man.startScanning();
 	}
+
+	
 }

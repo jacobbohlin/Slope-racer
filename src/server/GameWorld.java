@@ -2,26 +2,65 @@ package server;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
+
+import package1.Utility;
 
 public class GameWorld {
 	
-	public static float[][] playerData = new float[][]{
-		{1f, 2f, 3f, 4f},
-		{2f, 4f, 6f, 8f}, 
-		{4f, 8f, 12f, 16f}
-	};
-//	private final World world;
+	private static float[][] playerData;
+	protected static World world;
 	private Vec2 gravity;
 	private boolean allowSleepingObjects;
 	private static HashMap<InetAddress, Player> players;
+	private HashMap<InetAddress, MouseBall> mouseBalls;
 	
-//	public GameWorld(){
-//		gravity = new Vec2(0f, -9.8f);
-//		allowSleepingObjects = true;
-//		world = new World(gravity, allowSleepingObjects);
-//	}
+	public GameWorld(HashMap<InetAddress, Player> players){
+		this.players = players;
+		mouseBalls = new HashMap<InetAddress, MouseBall>();
+		playerData = new float[players.size()][2];
+		gravity = new Vec2(0f, -9.8f);
+		allowSleepingObjects = true;
+		world = new World(gravity);
+		world.setAllowSleep(allowSleepingObjects);
+		createMouseBalls();
+		
+	}
+	
+	/**
+	 * Creates a mouseBall for each player to play with
+	 */
+	private void createMouseBalls(){
+		for(Entry<InetAddress, Player> e : players.entrySet()){
+			Player p = e.getValue();
+			Vec2 position = new Vec2(p.getMouseX()/30, p.getMouseY()/30);
+			InetAddress addr = p.getAddress();
+			mouseBalls.put(addr, new MouseBall(position));
+		}
+	}
+	/**
+	 * Takes a step in time and fills the playerData-matrix with new data
+	 */
+	public void step(){
+		world.step(1/30f, 10, 10);
+		for(Entry<InetAddress, Player> e : players.entrySet()){
+			Player p = e.getValue();
+			MouseBall b = mouseBalls.get(p.getAddress());
+			playerData[p.getPlayerNbr()][0] = b.getPositionX();
+			playerData[p.getPlayerNbr()][1] = b.getPositionY();
+		}
+	}
+	
+	/**
+	 * 
+	 * @return matrix containing current positions of all bodies
+	 */
+	public static synchronized float[][] getPlayerData(){
+		return playerData;
+	}
 
 }

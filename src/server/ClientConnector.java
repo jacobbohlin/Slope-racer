@@ -12,14 +12,13 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class ClientConnector extends Thread {
-	public static HashMap<InetAddress, Player> players = new HashMap<InetAddress, Player>();
+	private HashMap<InetAddress, Player> players = new HashMap<InetAddress, Player>();
 	private DatagramSocket socket;
 	public boolean willSendUpdate;
 	private DatagramPacket dp;
 
-
 	public ClientConnector() {
-		willSendUpdate = true;
+		willSendUpdate = false;
 		dp = new DatagramPacket(new byte[1000], 1000);
 		try {
 			socket = new DatagramSocket(8888);
@@ -57,11 +56,11 @@ public class ClientConnector extends Thread {
 	}
 
 	private void connect(String nickName) {
-		if(players.containsKey(dp.getAddress())){
+		if (players.containsKey(dp.getAddress())) {
 			System.out.println("That IP has already connected");
 		} else {
-		players.put(dp.getAddress(), new Player(nickName, dp.getAddress(), dp.getPort()));
-		System.out.println("A new player has connected");
+			players.put(dp.getAddress(), new Player(nickName, dp.getAddress(), dp.getPort()));
+			System.out.println("A new player has connected");
 		}
 		Player p = players.get(dp.getAddress());
 		sendAck(p);
@@ -76,10 +75,10 @@ public class ClientConnector extends Thread {
 
 	}
 
-	private void send() throws IOException {
+	public void send() throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(GameWorld.playerData);
+		oos.writeObject(GameWorld.getPlayerData());
 		byte[] buf = baos.toByteArray();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
@@ -87,14 +86,13 @@ public class ClientConnector extends Thread {
 			packet.setPort(e.getValue().getPort());
 			socket.send(packet);
 		}
-		willSendUpdate = false;
+		System.out.println("hej" + GameWorld.getPlayerData()[0][1]);
 	}
 
-	
-	private void sendAck(Player p){
+	private void sendAck(Player p) {
 		String message = "ACK;" + p.getPlayerNbr();
 		dp.setData(message.getBytes());
-		dp.setAddress(p.getAdress());
+		dp.setAddress(p.getAddress());
 		dp.setPort(p.getPort());
 		System.out.println(p.getPort());
 		try {
@@ -105,5 +103,12 @@ public class ClientConnector extends Thread {
 		}
 	}
 
+	/**
+	 * 
+	 * @return HashMap containing all the Players currently connected
+	 */
+	public synchronized HashMap<InetAddress, Player> getPlayers() {
+		return players;
+	}
 
 }

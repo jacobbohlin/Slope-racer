@@ -55,5 +55,5 @@ public class Player {
 	 */
 	public int getPlayerNbr() {return playerNbr;}
 
-	public InetAddress getAdress() {return ip;}
+	public InetAddress getAddress() {return ip;}
 }

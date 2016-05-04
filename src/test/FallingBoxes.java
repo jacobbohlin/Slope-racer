@@ -79,7 +79,7 @@ public class FallingBoxes extends Application {
 	 * Creates the JBox2D world and calls methods for creating the environment.
 	 */
 	private void createWorld() {
-		world = new World(new Vec2(0.0f, -9.82f), true);
+		world = new World(new Vec2(0.0f, -9.82f));
 		addGround();
 		addWalls();
 		addBox();
