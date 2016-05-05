@@ -100,4 +100,12 @@ public class ClientConnector extends Thread {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * 
+	 * @return HashMap containing all the Players currently connected
+	 */
+	public synchronized HashMap<InetAddress, Player> getPlayers() {
+		return players;
+	}
+
 }
