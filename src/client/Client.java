@@ -9,10 +9,11 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import javafx.collections.ObservableSet;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-public class Client extends Service {
+public class Client extends Service<ObservableSet<float[][]>> {
 	private DatagramSocket socket;
 	private boolean connected = false;
 	private int id;
@@ -37,8 +38,7 @@ public class Client extends Service {
 			socket = new DatagramSocket();
 		} catch (SocketException e) {
 			e.printStackTrace();
-		}
-		
+		}		
 		Runner r = new Runner();
 		r.call();
 		try {
@@ -54,7 +54,7 @@ public class Client extends Service {
 		} catch (InterruptedException | IOException | ConnectionException e) {
 			System.out.println("Connection timed-out.");
 		}
-		return r;
+		return null;
 	}
 	
 	private void establishConnection() throws IOException {
@@ -84,10 +84,10 @@ public class Client extends Service {
 		return playerData;
 	}
 	
-	private class Runner extends Task {
+	private class Runner extends Task<ObservableSet<float[][]>> {
 
 		@Override
-		public Object call() {
+		public ObservableSet<float[][]> call() {
 			byte[] buf = new byte[1000];
 			DatagramPacket response = new DatagramPacket(buf, buf.length);
 			for (;;) {

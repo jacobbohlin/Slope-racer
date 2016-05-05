@@ -1,12 +1,20 @@
-package client;
+package clientGUI;
 
 import java.awt.MouseInfo;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
+import client.Client;
+import client.ConnectService;
+import client.ConnectionInfo;
+import client.ReceiveService;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -46,7 +54,7 @@ public class ClientGUI extends Application {
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
 		root = new Group();
-//		setup();
+		// setup();
 		stage.setTitle("Slope Racer");
 		stage.setFullScreen(false);
 		stage.setResizable(false);
@@ -66,7 +74,7 @@ public class ClientGUI extends Application {
 
 			public void handle(ActionEvent t) {
 				// What happens every frame.
-				if(firstDraw) {
+				if (firstDraw) {
 					initialDraw();
 				} else {
 					update();
@@ -87,59 +95,38 @@ public class ClientGUI extends Application {
 		stage.show();
 		System.out.println("Showing GUI");
 		setup();
-		timeline.playFromStart();
+//		timeline.playFromStart();
 	}
 
 	private void setup() {
-		Dialog dialog = new Dialog();
-		dialog.setTitle("Slope Racer");
-		dialog.setHeaderText(null);
-		ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(connectButtonType, ButtonType.CLOSE);
-
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
-
-		TextField nickname = new TextField();
-		// nickname.setPromptText("James");
-		nickname.setText("JAMES");// TA BORT
-		TextField address = new TextField();
-		// address.setPromptText("127.0.0.1");
-		address.setText("val-6");// TA BORT
-
-		grid.add(new Label("Nickname:"), 0, 0);
-		grid.add(nickname, 1, 0);
-		grid.add(new Label("IP-address:"), 0, 1);
-		grid.add(address, 1, 1);
-
-		Node connectButton = dialog.getDialogPane().lookupButton(connectButtonType);
-		// connectButton.setDisable(true);
-		// nickname.textProperty().addListener((observable, oldValue, newValue)
-		// -> {
-		// connectButton.setDisable(newValue.trim().isEmpty());
-		// });
-
-		dialog.getDialogPane().setContent(grid);
-
+		ConnectDialog dialog = new ConnectDialog();
 		dialog.showAndWait();
-		for (;;) {
-			try {
-				InetAddress ip = InetAddress.getByName(address.getText());
-				client = new Client(ip, 8888, nickname.getText());
-				client.start();
-				// d = new WaitForPlayerDialog();
-				break;
-			} catch (IOException e) {
-				dialog.setHeaderText("Invalid IP");
-				dialog.showAndWait();
-			} catch (Client.ConnectionException e1) {
-				dialog.setHeaderText("Unable to connect");
-				dialog.showAndWait();
+		try {
+			InetAddress ip = InetAddress.getByName(dialog.getAddress());
+			ConnectionInfo.setName(dialog.getName());
+			ConnectionInfo.setIP(ip);
+			ConnectionInfo.setPort(8888);
+			DatagramSocket socket = new DatagramSocket();
+			socket.setSoTimeout(1000);
+			ConnectionInfo.setSocket(socket);
+		} catch (UnknownHostException | SocketException e) {
+			e.printStackTrace();
+		}
+		final ConnectService cs = new ConnectService();
+		final ReceiveService rs = new ReceiveService();
+		for (int i = 0; i < 3; i++) {
+			if(!cs.isRunning()) {
+				cs.reset();
+				cs.start();	
+				try {
+					Thread.sleep(1050);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
+
 
 	/**
 	 * Draws the static game stage.

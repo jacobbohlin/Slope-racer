@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import clientGUI.ClientGUI;
 import javafx.concurrent.Task;
 
 public class ClientOld {
