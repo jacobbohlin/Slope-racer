@@ -88,7 +88,7 @@ public class ClientConnector extends Thread {
 
 	private void sendAck(Player p) {
 		String message = "ACK;" + p.getPlayerNbr();
-		System.out.println("Sending ack to: " + p.getAdress()+ " " + message + " " + p.getPort());
+		System.out.println("Sending ack to: " + p.getAddress()+ " " + message + " " + p.getPort());
 		dp = new DatagramPacket(new byte[1000], 1000);
 		dp.setData(message.getBytes());
 		dp.setAddress(p.getAddress());

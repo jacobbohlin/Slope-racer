@@ -8,8 +8,6 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 
-import package1.Utility;
-
 public class GameWorld {
 	
 	private static float[][] playerData;
