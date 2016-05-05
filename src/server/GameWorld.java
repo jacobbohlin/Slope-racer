@@ -8,8 +8,6 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 
-import package1.Utility;
-
 public class GameWorld {
 	
 	private static float[][] playerData;
@@ -23,7 +21,7 @@ public class GameWorld {
 		this.players = players;
 		mouseBalls = new HashMap<InetAddress, MouseBall>();
 		playerData = new float[players.size()][2];
-		gravity = new Vec2(0f, 0f);
+		gravity = new Vec2(0f, 0.3f);
 		allowSleepingObjects = true;
 		world = new World(gravity);
 		world.setAllowSleep(allowSleepingObjects);
