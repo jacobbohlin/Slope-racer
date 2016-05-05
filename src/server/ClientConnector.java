@@ -2,7 +2,6 @@ package server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -41,7 +40,7 @@ public class ClientConnector extends Thread {
 				String input = new String(dp.getData(), 0, dp.getLength());
 				System.out.println("Received packet: " + input);
 				if (input.startsWith("update;")) {
-					update(input.substring(8));
+					update(input.substring(7));
 				} else if (input.startsWith("connect;")) {
 					System.out.println("A new client is trying to connect.");
 					connect(input.substring(8));
@@ -66,10 +65,13 @@ public class ClientConnector extends Thread {
 
 	private void update(String input) throws IOException {
 
-		String[] inputArray = input.split(";");
-		int mouseX = Integer.parseInt(inputArray[0]);
-		int mouseY = Integer.parseInt(inputArray[1]);
-		players.get(dp.getAddress()).setMousePos(mouseX, mouseY);
+		System.out.println(input);
+		if(!input.isEmpty()){
+			String[] inputArray = input.split(";");
+			int mouseX = Integer.parseInt(inputArray[0]);			
+			int mouseY = Integer.parseInt(inputArray[1]);
+			players.get(dp.getAddress()).setMousePos(mouseX, mouseY);
+		}
 	}
 
 	public void send() throws IOException {
@@ -83,16 +85,15 @@ public class ClientConnector extends Thread {
 			packet.setPort(e.getValue().getPort());
 			socket.send(packet);
 		}
-		System.out.println("hej" + GameWorld.getPlayerData()[0][1]);
 	}
 
 	private void sendAck(Player p) {
 		String message = "ACK;" + p.getPlayerNbr();
-		System.out.println("Sending ack to: " + p.getAddress()+ " " + message + " " + p.getPort());
-		dp = new DatagramPacket(new byte[1000], 1000);
-		dp.setData(message.getBytes());
+		byte[] buf = message.getBytes();
+		dp = new DatagramPacket(buf, buf.length);
 		dp.setAddress(p.getAddress());
 		dp.setPort(p.getPort());
+		System.out.println("Sending ack to: " + dp.getAddress() + " " + new String(dp.getData(), 0, dp.getLength()) + " " + dp.getPort());
 		try {
 			socket.send(dp);
 		} catch (IOException e) {

@@ -35,6 +35,10 @@ public class MouseBall {
 		body = GameWorld.world.createBody(bd);
 		body.createFixture(fd);
 	}
+	
+	public Body getBody(){
+		return body;
+	}
 
 	public float getPositionX() {
 		return body.getPosition().x;
@@ -43,5 +47,4 @@ public class MouseBall {
 	public float getPositionY(){
 		return body.getPosition().y;
 	}
-
 }

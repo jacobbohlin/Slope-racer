@@ -20,7 +20,7 @@ public class ServerManager extends TimerTask {
 	public void startScanning(){
 		Scanner scan = new Scanner(System.in);
 		String s = scan.nextLine();
-		if(s.equals("start")){
+		if(!s.isEmpty()){
 			scan.close();
 			System.out.println("Lets get ready to rumble!");
 			startGame();
