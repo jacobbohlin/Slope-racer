@@ -9,30 +9,26 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-public class Client extends Service {
+public class ClientOld {
 	private DatagramSocket socket;
 	private boolean connected = false;
 	private int id;
+	private ClientGUI gui;
 	private String name;
+	private boolean firstDraw = true;
 	private InetAddress ip;
 	private int port;
-	private float[][] playerData;
 	 
 	
 
-	public Client(InetAddress ip, int port, String name)  throws IOException, ConnectionException {
-		System.out.println("Creating client");
+	public ClientOld(ClientGUI gui, InetAddress ip, int port, String name) throws IOException, ConnectionException {
+		this.gui = gui;
 		this.name = name;
 		this.ip = ip;
 		this.port = port;
-	}
-
-	@Override
-	protected Task createTask() {
-		System.out.println("Creating Task");
+		
 		try {
 			socket = new DatagramSocket();
 		} catch (SocketException e) {
@@ -40,7 +36,7 @@ public class Client extends Service {
 		}
 		
 		Runner r = new Runner();
-		r.call();
+		r.start();
 		try {
 			int i = 0;
 			while (!connected && i < 3) {
@@ -51,12 +47,11 @@ public class Client extends Service {
 					throw new ConnectionException(); 
 				}
 			}
-		} catch (InterruptedException | IOException | ConnectionException e) {
+		} catch (InterruptedException e) {
 			System.out.println("Connection timed-out.");
 		}
-		return r;
 	}
-	
+
 	private void establishConnection() throws IOException {
 		byte[] handshake = ("connect;" + name).getBytes();
 		DatagramPacket connect = new DatagramPacket(handshake, handshake.length);
@@ -67,8 +62,8 @@ public class Client extends Service {
 
 	}
 	
-	public void sendUpdate(int mouseX, int mouseY) {
-		byte[] buf = ("update;" + mouseX + ";" + mouseY).getBytes();		
+	private void sendUpdate() {
+		byte[] buf = ("update;" + gui.getMouseX() + ";" + gui.getMouseY()).getBytes();		
 		DatagramPacket dp = new DatagramPacket(buf, buf.length);
 		dp.setAddress(ip);
 		dp.setPort(port);
@@ -79,15 +74,11 @@ public class Client extends Service {
 			e.printStackTrace();
 		}
 	}
-	
-	public float[][] getPlayerData() {
-		return playerData;
-	}
-	
-	private class Runner extends Task {
+
+	private class Runner extends Thread {
 
 		@Override
-		public Object call() {
+		public void run() {
 			byte[] buf = new byte[1000];
 			DatagramPacket response = new DatagramPacket(buf, buf.length);
 			for (;;) {
@@ -112,17 +103,25 @@ public class Client extends Service {
 						ByteArrayInputStream bais = new ByteArrayInputStream(buf);
 						ObjectInputStream ois = new ObjectInputStream(bais);
 						try {
-							playerData = (float[][]) ois.readObject();
+							float[][] playerData = (float[][]) ois.readObject();
 							System.out.println("Playerdata matrix: ");
 							for (int i = 0; i < playerData.length; i++) {
 								for (int j = 0; j < playerData[0].length; j++) {
 									System.out.println(playerData[i][j]);
 								}
 							}
+							if(firstDraw) {
+								firstDraw = false;
+								gui.initialDraw(playerData);
+							} else {
+								gui.update(playerData);
+							}
 						} catch (ClassNotFoundException e) {
 							System.out.println("Could not recreate float matrix");
 							e.printStackTrace();
 						}
+						sendUpdate();
+
 					}
 
 				} catch (IOException e) {
@@ -133,7 +132,7 @@ public class Client extends Service {
 
 	}
 	
-	class ConnectionException extends Exception {}	
+	class ConnectionException extends Exception {}
 
 //	public static void main(String args[]) throws UnknownHostException {
 //		int port = 8888;
