@@ -11,22 +11,22 @@ import java.net.UnknownHostException;
 
 public class Client {
 	private DatagramSocket socket;
-	private DatagramPacket dp;
 	private boolean connected = false;
 	private int id;
 	private ClientGUI gui;
 	private String name;
-	private int mouseX, mouseY;
 	private boolean firstDraw = true;
+	private InetAddress ip;
+	private int port;
+	 
+	
 
 	public Client(ClientGUI gui, InetAddress ip, int port, String name) throws IOException, ConnectionException {
 		this.gui = gui;
 		this.name = name;
-		mouseX = 50;
-		mouseY = 50;
-		dp = new DatagramPacket(new byte[1000], 1000);
-		dp.setAddress(ip);
-		dp.setPort(port);
+		this.ip = ip;
+		this.port = port;
+		
 		try {
 			socket = new DatagramSocket();
 		} catch (SocketException e) {
@@ -38,7 +38,7 @@ public class Client {
 		try {
 			int i = 0;
 			while (!connected && i < 3) {
-				establishConnection(ip, port);
+				establishConnection();
 				i++;
 				Thread.sleep(3000);
 				if(i == 2) {
@@ -50,7 +50,7 @@ public class Client {
 		}
 	}
 
-	private void establishConnection(InetAddress ip, int port) throws IOException {
+	private void establishConnection() throws IOException {
 		byte[] handshake = ("connect;" + name).getBytes();
 		DatagramPacket connect = new DatagramPacket(handshake, handshake.length);
 		connect.setAddress(ip);
@@ -59,11 +59,12 @@ public class Client {
 		System.out.println("Trying to connect...");
 
 	}
-
+	
 	private void sendUpdate() {
-//		mouseX = gui.getMouseX();
-//		mouseY = gui.getMouseY();
-		dp.setData(("update;" + mouseX + ";" + mouseY).getBytes());
+		byte[] buf = ("update;" + gui.getMouseX() + ";" + gui.getMouseY()).getBytes();		
+		DatagramPacket dp = new DatagramPacket(buf, buf.length);
+		dp.setAddress(ip);
+		dp.setPort(port);
 		try {
 			socket.send(dp);
 		} catch (IOException e) {
@@ -83,8 +84,8 @@ public class Client {
 					socket.receive(response);
 					String s = new String(response.getData(), 0, response.getLength());
 
-					// This happens while the connection is not yet established
-					// and the client is waiting for ACK.
+					/* This happens while the connection is not yet established
+					and the client is waiting for ACK.*/
 					if (!connected) {
 						if (s.startsWith("ACK")) {
 							id = Integer.parseInt(s.split(";")[1]);

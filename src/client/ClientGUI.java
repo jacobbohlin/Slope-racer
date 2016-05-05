@@ -21,6 +21,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class ClientGUI extends Application {
+	private static final float RATIO = 30;
 	private Stage stage;
 	private Client client;
 	private Group root;
@@ -36,12 +37,12 @@ public class ClientGUI extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
+		root = new Group();
 		setup();
 		stage.setTitle("Slope Racer");
 		stage.setFullScreen(false);
 		stage.setResizable(false);
 		
-		root = new Group();
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
 		drawStage();
 		
@@ -62,9 +63,11 @@ public class ClientGUI extends Application {
 		grid.setPadding(new Insets(20, 150, 10, 10));
 
 		TextField nickname = new TextField();
-		nickname.setPromptText("James");
+//		nickname.setPromptText("James");
+		nickname.setText("JAMES");//TA BORT
 		TextField address = new TextField();
-		address.setPromptText("127.0.0.1");
+//		address.setPromptText("127.0.0.1");
+		address.setText("val-6");//TA BORT
 
 		grid.add(new Label("Nickname:"), 0, 0);
 		grid.add(nickname, 1, 0);
@@ -72,10 +75,10 @@ public class ClientGUI extends Application {
 		grid.add(address, 1, 1);
 
 		Node connectButton = dialog.getDialogPane().lookupButton(connectButtonType);
-		connectButton.setDisable(true);
-		nickname.textProperty().addListener((observable, oldValue, newValue) -> {
-			connectButton.setDisable(newValue.trim().isEmpty());
-		});
+//		connectButton.setDisable(true);
+//		nickname.textProperty().addListener((observable, oldValue, newValue) -> {
+//			connectButton.setDisable(newValue.trim().isEmpty());
+//		});
 
 		dialog.getDialogPane().setContent(grid);
 
@@ -112,15 +115,17 @@ public class ClientGUI extends Application {
 	 * @param pos Position of all players.
 	 */
 	public void initialDraw(float[][] pos) {
+		System.out.println("-------------------------Drawing circles------------------------");
 		circles = new Circle[pos.length];
 		float[] indivPos = new float[2/* pos[0].length */];
 		for (int i = 0; i < pos.length; i++) {
 			for (int k = 0; k < 2 /* pos[i].length */; k++) {
-				indivPos[k] = pos[i][k];
+				indivPos[k] = pos[i][k]*RATIO;
 			}
-			circles[i] = new Circle(10, COLORES[i]);
-			circles[i].setLayoutX(indivPos[0]);
-			circles[i].setLayoutX(indivPos[1]);
+			circles[i] = new Circle(20, COLORES[i]);
+			circles[i].setLayoutX(indivPos[0]+100);
+			circles[i].setLayoutY(indivPos[1]+100);
+			root.getChildren().add(circles[i]);
 		}
 	}
 	
@@ -129,13 +134,14 @@ public class ClientGUI extends Application {
 	 * @param pos Positions of all players.
 	 */
 	public void update(float[][] pos) {
+		System.out.println("---------------UPDATING-------------");
 		float[] indivPos = new float[2/* pos[0].length */];
 		for (int i = 0; i < pos.length; i++) {
 			for (int k = 0; k < 2 /* pos[i].length */; k++) {
-				indivPos[k] = pos[i][k];
+				indivPos[k] = pos[i][k]*RATIO;
 			}
 			circles[i].setLayoutX(indivPos[0]);
-			circles[i].setLayoutX(indivPos[1]);
+			circles[i].setLayoutY(indivPos[1]);
 		}
 	}
 	
