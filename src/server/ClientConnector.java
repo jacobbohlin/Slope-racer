@@ -38,10 +38,8 @@ public class ClientConnector extends Thread {
 				}
 				dp = new DatagramPacket(new byte[1000], 1000);
 				socket.receive(dp);
-				System.out.println("Received packet");
 				String input = new String(dp.getData(), 0, dp.getLength());
-				System.out.println(dp.getData());
-				System.out.println(input);
+				System.out.println("Received packet: " + input);
 				if (input.startsWith("update;")) {
 					update(input.substring(8));
 				} else if (input.startsWith("connect;")) {
@@ -72,7 +70,6 @@ public class ClientConnector extends Thread {
 		int mouseX = Integer.parseInt(inputArray[0]);
 		int mouseY = Integer.parseInt(inputArray[1]);
 		players.get(dp.getAddress()).setMousePos(mouseX, mouseY);
-
 	}
 
 	public void send() throws IOException {
@@ -91,10 +88,11 @@ public class ClientConnector extends Thread {
 
 	private void sendAck(Player p) {
 		String message = "ACK;" + p.getPlayerNbr();
+		System.out.println("Sending ack to: " + p.getAdress()+ " " + message + " " + p.getPort());
+		dp = new DatagramPacket(new byte[1000], 1000);
 		dp.setData(message.getBytes());
 		dp.setAddress(p.getAddress());
 		dp.setPort(p.getPort());
-		System.out.println(p.getPort());
 		try {
 			socket.send(dp);
 		} catch (IOException e) {
@@ -102,13 +100,4 @@ public class ClientConnector extends Thread {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * 
-	 * @return HashMap containing all the Players currently connected
-	 */
-	public synchronized HashMap<InetAddress, Player> getPlayers() {
-		return players;
-	}
-
 }

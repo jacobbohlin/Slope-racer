@@ -6,8 +6,6 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -19,8 +17,9 @@ public class Client {
 	private ClientGUI gui;
 	private String name;
 	private int mouseX, mouseY;
+	private boolean firstDraw = true;
 
-	public Client(ClientGUI gui, InetAddress ip, int port, String name) {
+	public Client(ClientGUI gui, InetAddress ip, int port, String name) throws IOException, ConnectionException {
 		this.gui = gui;
 		this.name = name;
 		mouseX = 50;
@@ -38,30 +37,39 @@ public class Client {
 		r.start();
 		try {
 			int i = 0;
-			while(!connected && i < 3) {
+			while (!connected && i < 3) {
 				establishConnection(ip, port);
 				i++;
 				Thread.sleep(3000);
+				if(i == 2) {
+					throw new ConnectionException(); 
+				}
 			}
 		} catch (InterruptedException e) {
 			System.out.println("Connection timed-out.");
 		}
 	}
-	
-	private void establishConnection(InetAddress ip, int port) {
+
+	private void establishConnection(InetAddress ip, int port) throws IOException {
 		byte[] handshake = ("connect;" + name).getBytes();
 		DatagramPacket connect = new DatagramPacket(handshake, handshake.length);
 		connect.setAddress(ip);
 		connect.setPort(port);
+		socket.send(connect);
+		System.out.println("Trying to connect...");
+
+	}
+
+	private void sendUpdate() {
+//		mouseX = gui.getMouseX();
+//		mouseY = gui.getMouseY();
+		dp.setData(("update;" + mouseX + ";" + mouseY).getBytes());
 		try {
-			socket.send(connect);
-			System.out.println("Trying to connect...");
+			socket.send(dp);
 		} catch (IOException e) {
+			System.out.println("Could not send update to server");
 			e.printStackTrace();
 		}
-	}
-	private void sendUpdate(){
-		//TODO
 	}
 
 	private class Runner extends Thread {
@@ -74,48 +82,62 @@ public class Client {
 				try {
 					socket.receive(response);
 					String s = new String(response.getData(), 0, response.getLength());
-					
-					//This happens while the connection is not yet established and the client is waiting for ACK.
-					if(!connected) {
-						if(s.startsWith("ACK")) {
+
+					// This happens while the connection is not yet established
+					// and the client is waiting for ACK.
+					if (!connected) {
+						if (s.startsWith("ACK")) {
 							id = Integer.parseInt(s.split(";")[1]);
 							System.out.println("FEEDBACKZZ");
 							connected = true;
+							System.out.println("My player id is: " + id);
 						} else {
 							System.out.println("Connection DENIED!");
 						}
-						//End of connection-process.
-					} else if (!s.startsWith("ACK")){
+						// End of connection-process.
+						
+					} else if (!s.startsWith("ACK")) {
 						ByteArrayInputStream bais = new ByteArrayInputStream(buf);
 						ObjectInputStream ois = new ObjectInputStream(bais);
 						try {
-							float[][] playerData = (float[][])ois.readObject();
+							float[][] playerData = (float[][]) ois.readObject();
 							System.out.println("Playerdata matrix: ");
-							for(int i = 0; i < playerData.length; i++){
-								for(int j = 0; j < playerData[0].length; j++){
+							for (int i = 0; i < playerData.length; i++) {
+								for (int j = 0; j < playerData[0].length; j++) {
 									System.out.println(playerData[i][j]);
 								}
+							}
+							if(firstDraw) {
+								firstDraw = false;
+								gui.initialDraw(playerData);
+							} else {
+								gui.update(playerData);
 							}
 						} catch (ClassNotFoundException e) {
 							System.out.println("Could not recreate float matrix");
 							e.printStackTrace();
 						}
 						sendUpdate();
-						
+
 					}
-					
-					
-					
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		
+
 	}
 	
-	public static void main(String args[]) throws UnknownHostException{
-		int port = 8888;
-		Client per = new Client(new ClientGUI(), InetAddress.getLocalHost(), port, "Per");
-	}
+	class ConnectionException extends Exception {}
+
+//	public static void main(String args[]) throws UnknownHostException {
+//		int port = 8888;
+//		try {
+//			Client per = new Client(new ClientGUI(), InetAddress.getLocalHost(), port, "Per");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 }
