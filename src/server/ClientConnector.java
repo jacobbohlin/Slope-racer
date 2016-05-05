@@ -2,7 +2,6 @@ package server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -90,11 +89,11 @@ public class ClientConnector extends Thread {
 
 	private void sendAck(Player p) {
 		String message = "ACK;" + p.getPlayerNbr();
-		System.out.println("Sending ack to: " + p.getAddress()+ " " + message + " " + p.getPort());
-		dp = new DatagramPacket(new byte[1000], 1000);
-		dp.setData(message.getBytes());
+		byte[] buf = message.getBytes();
+		dp = new DatagramPacket(buf, buf.length);
 		dp.setAddress(p.getAddress());
 		dp.setPort(p.getPort());
+		System.out.println("Sending ack to: " + dp.getAddress() + " " + new String(dp.getData(), 0, dp.getLength()) + " " + dp.getPort());
 		try {
 			socket.send(dp);
 		} catch (IOException e) {

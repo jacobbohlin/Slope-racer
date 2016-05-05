@@ -26,7 +26,6 @@ public class GameWorld {
 		world = new World(gravity);
 		world.setAllowSleep(allowSleepingObjects);
 		createMouseBalls();
-		
 	}
 	
 	/**
@@ -35,10 +34,16 @@ public class GameWorld {
 	private void createMouseBalls(){
 		for(Entry<InetAddress, Player> e : players.entrySet()){
 			Player p = e.getValue();
-			Vec2 position = new Vec2(p.getMouseX()/30, p.getMouseY()/30);
+			Vec2 position = new Vec2(5 + p.getPlayerNbr()*10, 0);
 			InetAddress addr = p.getAddress();
 			mouseBalls.put(addr, new MouseBall(position));
 		}
+	}
+	/**
+	 * Creates the level for the mouseBalls to bounce on
+	 */
+	private void createLevel(){
+		
 	}
 	/**
 	 * Takes a step in time and fills the playerData-matrix with new data
@@ -48,8 +53,16 @@ public class GameWorld {
 		for(Entry<InetAddress, Player> e : players.entrySet()){
 			Player p = e.getValue();
 			MouseBall b = mouseBalls.get(p.getAddress());
+			
+			//Update playerData with correct body positions
 			playerData[p.getPlayerNbr()][0] = b.getPositionX();
 			playerData[p.getPlayerNbr()][1] = b.getPositionY();
+			
+			//Calculate and apply force to body depending on mouse position relative to body position
+			float deltaX = p.getMouseX() - playerData[p.getPlayerNbr()][0];
+			float deltaY = p.getMouseY() - playerData[p.getPlayerNbr()][1];
+			Vec2 impulse = new Vec2(deltaX/5, deltaY/5);
+			b.getBody().applyForceToCenter(impulse);
 		}
 	}
 	
