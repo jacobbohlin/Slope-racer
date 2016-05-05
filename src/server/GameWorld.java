@@ -23,7 +23,7 @@ public class GameWorld {
 		this.players = players;
 		mouseBalls = new HashMap<InetAddress, MouseBall>();
 		playerData = new float[players.size()][2];
-		gravity = new Vec2(0f, -9.8f);
+		gravity = new Vec2(0f, 0f);
 		allowSleepingObjects = true;
 		world = new World(gravity);
 		world.setAllowSleep(allowSleepingObjects);
