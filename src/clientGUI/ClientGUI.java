@@ -36,6 +36,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import test.Val;
+import client.*;
 
 public class ClientGUI extends Application {
 	private boolean firstDraw = true;
