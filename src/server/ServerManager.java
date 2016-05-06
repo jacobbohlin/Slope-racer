@@ -5,48 +5,48 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 public class ServerManager extends TimerTask {
 	private ClientConnector connector;
 	private GameWorld world;
 	private ServerGUI gui;
-	
+
 	public ServerManager() {
-//		this.gui = gui;
+		// this.gui = gui;
 		connector = new ClientConnector();
 		connector.start();
 	}
-	
-	public void startScanning(){
+
+	public void startScanning() {
 		Scanner scan = new Scanner(System.in);
 		String s = scan.nextLine();
-		if(!s.isEmpty()){
+		if (!s.isEmpty()) {
 			scan.close();
 			System.out.println("Lets get ready to rumble!");
 			startGame();
 		}
 	}
-	
+
 	@Override
 	public void run() {
-       	world.step();
-       	try {
+		world.step();
+		try {
 			connector.send();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	private void startGame(){
+
+	private void startGame() {
 		world = new GameWorld(connector.getPlayers());
 		Timer timer = new Timer();
-		timer.schedule(this, 0, 1000/60);
+		timer.schedule(this, 0, 1000 / 60);
 	}
-	public static void main(String args[]){
+
+	public static void main(String args[]) {
 		ServerManager man = new ServerManager();
 		man.startScanning();
 	}
 
-	
 }

@@ -6,19 +6,21 @@ import java.net.InetAddress;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-public class SendService extends Service<String> {
+public class SendService extends Service<Void> {
 	private int mouseX, mouseY;
 
 	@Override
-	protected Task<String> createTask() {
+	protected Task<Void> createTask() {
 
-		return new Task<String>() {
+		return new Task<Void>() {
 
 			@Override
-			protected String call() throws Exception {
+			protected Void call() throws Exception {
+				
 				return null;
 			}
 		};
+		
 	}
 
 	public void setMousePos(int x, int y) {

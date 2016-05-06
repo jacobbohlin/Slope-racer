@@ -15,7 +15,7 @@ public class ReceiveService extends Service<Void>{
 			@Override
 			protected Void call() throws Exception {
 				for(;;) {
-					System.out.println("asd");//TA INTE BORT!!!
+					System.out.println();//TA INTE BORT!!!
 					DatagramPacket dp = new DatagramPacket(new byte[1000], 1000);
 					ConnectionInfo.getSocket().receive(dp);
 //					String s = new String(dp.getData(), 0, dp.getLength());

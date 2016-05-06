@@ -1,47 +1,36 @@
 package clientGUI;
 
 import java.awt.MouseInfo;
-import java.io.IOException;
+import java.awt.Toolkit;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import client.Client;
 import client.ConnectService;
 import client.ConnectionInfo;
 import client.ReceiveService;
+import client.SendTask;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
-import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
+//import javafx.scene.control.Dialog;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import test.Val;
 
 public class ClientGUI extends Application {
+	private final double SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+	private final double SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	private boolean firstDraw = true;
 	private static final float RATIO = 30;
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW };
-	private Stage stage;
 	private Group root;
 	private final double HEIGHT = 600, WIDTH = 800;
 	private Circle[] circles;
@@ -55,7 +44,6 @@ public class ClientGUI extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		this.stage = stage;
 		root = new Group();
 		// setup();
 		stage.setTitle("Slope Racer");
@@ -82,7 +70,8 @@ public class ClientGUI extends Application {
 						initialDraw();
 					} else {
 						update();
-					}				
+					}
+					new Thread(new SendTask(getMouseX(), getMouseY())).start();
 				}
 			}
 		};
@@ -152,7 +141,7 @@ public class ClientGUI extends Application {
 	 * @param pos Position of all players.         
 	 */
 	public void initialDraw() {
-		System.out.println("-------------------------Drawing circles------------------------");
+//		System.out.println("-------------------------Drawing circles------------------------");
 		float[][] playerData = ConnectionInfo.getPlayerData();
 		circles = new Circle[playerData.length];
 		float[] indivPos = new float[2/* pos[0].length */];
@@ -172,7 +161,7 @@ public class ClientGUI extends Application {
 	 * @param pos Positions of all players.           
 	 */
 	public void update() {
-		System.out.println("---------------UPDATING-------------");
+//		System.out.println("---------------UPDATING-------------");
 		float[][] playerData = ConnectionInfo.getPlayerData();
 		float[] indivPos = new float[2/* pos[0].length */];
 		for (int i = 0; i < playerData.length; i++) {
@@ -185,28 +174,28 @@ public class ClientGUI extends Application {
 	}
 
 	/**
-	 * @return Mouse's X-position.
+	 * @return Mouse's X-position in percentage from upper-left corner.
 	 */
-	private int getMouseX() {
-		return (int) MouseInfo.getPointerInfo().getLocation().getX();
-		// TODO Update to percentage of screen instead of pixels.
+	private float getMouseX() {
+		return (float) (MouseInfo.getPointerInfo().getLocation().getX() / SCREEN_WIDTH * 100);
+		
 	}
 
 	/**
-	 * @return Mouse's Y-position.
+	 * @return Mouse's Y-position in percentage from upper-left corner.
 	 */
-	private int getMouseY() {
-		return (int) MouseInfo.getPointerInfo().getLocation().getY();
-		// TODO Update to percentage of screen instead of pixels.
+	private float getMouseY() {
+		return (float) (MouseInfo.getPointerInfo().getLocation().getY() / SCREEN_HEIGHT * 100);
 	}
 
-	private class WaitForPlayerDialog extends Dialog {
-
-		private WaitForPlayerDialog() {
-			setTitle("Slope Racer");
-			setHeaderText(null);
-			setContentText("Waiting for game to start...");
-			showAndWait();
-		}
-	}
+	/* WORK IN PROGRESS */
+//	private class WaitForPlayerDialog extends Dialog {
+//
+//		private WaitForPlayerDialog() {
+//			setTitle("Slope Racer");
+//			setHeaderText(null);
+//			setContentText("Waiting for game to start...");
+//			showAndWait();
+//		}
+//	}
 }
