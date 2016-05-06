@@ -59,10 +59,10 @@ public class GameWorld {
 			playerData[p.getPlayerNbr()][1] = b.getPositionY();
 			
 			//Calculate and apply force to body depending on mouse position relative to body position
-			float deltaX = p.getMouseX() - playerData[p.getPlayerNbr()][0];
-			float deltaY = p.getMouseY() - playerData[p.getPlayerNbr()][1];
-			Vec2 impulse = new Vec2(deltaX/50, deltaY/50);
-//			b.getBody().applyForceToCenter(impulse);
+			float deltaX = p.getMouseX() - 50;
+			float deltaY = p.getMouseY() - 50;
+			Vec2 impulse = new Vec2(deltaX/20, deltaY/20);
+			b.getBody().applyForceToCenter(impulse);
 		}
 	}
 	

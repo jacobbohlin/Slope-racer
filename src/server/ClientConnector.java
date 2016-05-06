@@ -63,11 +63,10 @@ public class ClientConnector extends Thread {
 
 	private void update(String input) throws IOException {
 
-		System.out.println(input);
 		if(!input.isEmpty()){
 			String[] inputArray = input.split(";");
-			int mouseX = Integer.parseInt(inputArray[0]);			
-			int mouseY = Integer.parseInt(inputArray[1]);
+			int mouseX = (int) Double.parseDouble(inputArray[0]);			
+			int mouseY = (int) Double.parseDouble(inputArray[1]);
 			players.get(dp.getAddress()).setMousePos(mouseX, mouseY);
 		}
 	}
@@ -81,8 +80,8 @@ public class ClientConnector extends Thread {
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			packet.setAddress(e.getKey());
 			packet.setPort(e.getValue().getPort());
-			System.out.println("sending update to: " + packet.getAddress() + " " + packet.getPort() + " X: " 
-			+ GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][0] + " Y: " + GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][1]);
+//			System.out.println("sending update to: " + packet.getAddress() + " " + packet.getPort() + " X: " 
+//			+ GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][0] + " Y: " + GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][1]);
 			socket.send(packet);
 		}
 	}

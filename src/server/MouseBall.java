@@ -19,7 +19,7 @@ public class MouseBall {
 		// Create a body definition for this mouseBall
 		BodyDef bd = new BodyDef();
 		bd.type = BodyType.DYNAMIC;
-		bd.linearDamping = 0.1f;
+		bd.linearDamping = 0.5f;
 		bd.position.set(position);
 
 		// Create a shape for this mouseBall

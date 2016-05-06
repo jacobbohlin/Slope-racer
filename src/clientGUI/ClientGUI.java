@@ -24,6 +24,11 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+<<<<<<< HEAD
+=======
+import test.Val;
+import client.*;
+>>>>>>> 94a783e4084b4c440cd2eda59df613f9e7a933a4
 
 public class ClientGUI extends Application {
 	private final double SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
