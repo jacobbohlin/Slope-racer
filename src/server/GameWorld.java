@@ -34,7 +34,7 @@ public class GameWorld {
 	private void createMouseBalls(){
 		for(Entry<InetAddress, Player> e : players.entrySet()){
 			Player p = e.getValue();
-			Vec2 position = new Vec2(5 + p.getPlayerNbr()*10, 0);
+			Vec2 position = new Vec2(10, 1);
 			InetAddress addr = p.getAddress();
 			mouseBalls.put(addr, new MouseBall(position));
 		}
@@ -49,7 +49,7 @@ public class GameWorld {
 	 * Takes a step in time and fills the playerData-matrix with new data
 	 */
 	public void step(){
-		world.step(1/30f, 10, 10);
+		world.step(1/60f, 10, 10);
 		for(Entry<InetAddress, Player> e : players.entrySet()){
 			Player p = e.getValue();
 			MouseBall b = mouseBalls.get(p.getAddress());
@@ -62,7 +62,7 @@ public class GameWorld {
 			float deltaX = p.getMouseX() - playerData[p.getPlayerNbr()][0];
 			float deltaY = p.getMouseY() - playerData[p.getPlayerNbr()][1];
 			Vec2 impulse = new Vec2(deltaX/50, deltaY/50);
-			b.getBody().applyForceToCenter(impulse);
+//			b.getBody().applyForceToCenter(impulse);
 		}
 	}
 	

@@ -41,7 +41,7 @@ public class ServerManager extends TimerTask {
 	private void startGame(){
 		world = new GameWorld(connector.getPlayers());
 		Timer timer = new Timer();
-		timer.schedule(this, 0, 33);
+		timer.schedule(this, 0, 1000/60);
 	}
 	public static void main(String args[]){
 		ServerManager man = new ServerManager();
