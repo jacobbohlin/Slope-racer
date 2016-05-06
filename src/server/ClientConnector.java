@@ -32,9 +32,6 @@ public class ClientConnector extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				if (willSendUpdate && !players.isEmpty()) {
-					send();
-				}
 				dp = new DatagramPacket(new byte[1000], 1000);
 				socket.receive(dp);
 				String input = new String(dp.getData(), 0, dp.getLength());
@@ -42,7 +39,7 @@ public class ClientConnector extends Thread {
 				if (input.startsWith("update;")) {
 					update(input.substring(7));
 				} else if (input.startsWith("connect;")) {
-					System.out.println("A new client is trying to connect.");
+					System.out.println("A client is trying to connect.");
 					connect(input.substring(8));
 				}
 
@@ -55,6 +52,7 @@ public class ClientConnector extends Thread {
 	private void connect(String nickName) {
 		if (players.containsKey(dp.getAddress())) {
 			System.out.println("That IP has already connected");
+			players.get(dp.getAddress()).setPort(dp.getPort());
 		} else {
 			players.put(dp.getAddress(), new Player(nickName, dp.getAddress(), dp.getPort()));
 			System.out.println("A new player has connected");
@@ -83,6 +81,8 @@ public class ClientConnector extends Thread {
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			packet.setAddress(e.getKey());
 			packet.setPort(e.getValue().getPort());
+			System.out.println("sending update to: " + packet.getAddress() + " " + packet.getPort() + " X: " 
+			+ GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][0] + " Y: " + GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][1]);
 			socket.send(packet);
 		}
 	}
@@ -93,7 +93,7 @@ public class ClientConnector extends Thread {
 		dp = new DatagramPacket(buf, buf.length);
 		dp.setAddress(p.getAddress());
 		dp.setPort(p.getPort());
-		System.out.println("Sending ack to: " + dp.getAddress() + " " + new String(dp.getData(), 0, dp.getLength()) + " " + dp.getPort());
+		System.out.println("Sending ack to: " + dp.getAddress() + " " + dp.getPort() + " Message: " + new String(dp.getData(), 0, dp.getLength()));
 		try {
 			socket.send(dp);
 		} catch (IOException e) {

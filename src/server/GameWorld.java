@@ -21,7 +21,7 @@ public class GameWorld {
 		this.players = players;
 		mouseBalls = new HashMap<InetAddress, MouseBall>();
 		playerData = new float[players.size()][2];
-		gravity = new Vec2(0f, 0.3f);
+		gravity = new Vec2(0f, 0.0f);
 		allowSleepingObjects = true;
 		world = new World(gravity);
 		world.setAllowSleep(allowSleepingObjects);
@@ -61,7 +61,7 @@ public class GameWorld {
 			//Calculate and apply force to body depending on mouse position relative to body position
 			float deltaX = p.getMouseX() - playerData[p.getPlayerNbr()][0];
 			float deltaY = p.getMouseY() - playerData[p.getPlayerNbr()][1];
-			Vec2 impulse = new Vec2(deltaX/5, deltaY/5);
+			Vec2 impulse = new Vec2(deltaX/50, deltaY/50);
 			b.getBody().applyForceToCenter(impulse);
 		}
 	}
