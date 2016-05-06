@@ -56,4 +56,8 @@ public class Player {
 	public int getPlayerNbr() {return playerNbr;}
 
 	public InetAddress getAddress() {return ip;}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
 }
