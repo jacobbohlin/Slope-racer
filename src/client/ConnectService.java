@@ -19,7 +19,7 @@ public class ConnectService extends Service<Void> {
 				connect.setPort(ConnectionInfo.getPort());
 				ConnectionInfo.getSocket().send(connect);
 				DatagramPacket response = new DatagramPacket(new byte[1000], 1000);
-				ConnectionInfo.getSocket().setSoTimeout(1000);
+//				ConnectionInfo.getSocket().setSoTimeout(1000);
 				System.out.println("Waiting for response....");
 				try {
 					ConnectionInfo.getSocket().receive(response);
