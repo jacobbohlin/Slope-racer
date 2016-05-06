@@ -46,6 +46,7 @@ public class ClientGUI extends Application {
 	private final double HEIGHT = 600, WIDTH = 800;
 	private Circle[] circles;
 	private final Timeline timeline = new Timeline();
+	private final float FPS = 1/60f;
 	// private WaitForPlayerDialog d;
 
 	public static void main(String[] args) {
@@ -67,8 +68,8 @@ public class ClientGUI extends Application {
 		// Frame events.
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
-		Duration duration = Duration.seconds(1.0 / 30.0); // Set duration for
-															// frame, 30fps.
+		Duration duration = Duration.seconds(FPS); // Set duration for
+												   // frame, 60fps.
 
 		// Create an ActionEvent, on trigger it executes a world time step.
 		EventHandler<ActionEvent> ae = new EventHandler<ActionEvent>() {
@@ -77,6 +78,7 @@ public class ClientGUI extends Application {
 				// What happens every frame.
 				if(ConnectionInfo.isFirstPacketReceived()){
 					if (firstDraw) {
+						firstDraw = false;
 						initialDraw();
 					} else {
 						update();
@@ -96,7 +98,6 @@ public class ClientGUI extends Application {
 		stage.show();
 		System.out.println("Showing GUI");
 		setup();
-		// timeline.playFromStart();
 	}
 	
 	/**
@@ -111,7 +112,6 @@ public class ClientGUI extends Application {
 			ConnectionInfo.setIp(ip);
 			ConnectionInfo.setPort(8888);
 			DatagramSocket socket = new DatagramSocket();
-			socket.setSoTimeout(1000);
 			ConnectionInfo.setSocket(socket);
 		} catch (UnknownHostException | SocketException e) {
 			e.printStackTrace();
@@ -199,13 +199,6 @@ public class ClientGUI extends Application {
 		return (int) MouseInfo.getPointerInfo().getLocation().getY();
 		// TODO Update to percentage of screen instead of pixels.
 	}
-	
-	/**
-	 * Starts the application timeline which will draw 30 times per second.
-	 */
-	private void startTimeLine() {
-		timeline.playFromStart();
-	}
 
 	private class WaitForPlayerDialog extends Dialog {
 
@@ -214,7 +207,6 @@ public class ClientGUI extends Application {
 			setHeaderText(null);
 			setContentText("Waiting for game to start...");
 			showAndWait();
-
 		}
 	}
 }
