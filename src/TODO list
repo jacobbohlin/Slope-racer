@@ -1,2 +1,4 @@
 
-Skicka mousePosition frÃ¥n client i korrekt format
+Skicka mousePosition frÃ¥n client i korrekt format.
+
+Fixa så att den testar att connecta plural gånger.

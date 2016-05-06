@@ -4,24 +4,68 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class ConnectionInfo {
-	public static InetAddress IP;
-	public static int PORT;
-	public static DatagramSocket SOCKET;
-	public static String NAME;
+	private static InetAddress ip;
+	private static int port;
+	private static DatagramSocket socket;
+	private static String name;
+	private static int id = -1;
+	private static float[][] playerData;
+	private static boolean firstPacketReceived = false;
 	
-	public static void setIP(InetAddress ip) {
-		IP = ip;
+	public static InetAddress getIp() {
+		return ip;
+	}
+	
+	public static void setIp(InetAddress ip) {
+		ConnectionInfo.ip = ip;
+	}
+	
+	public static int getPort() {
+		return port;
 	}
 	
 	public static void setPort(int port) {
-		PORT = port;
+		ConnectionInfo.port = port;
+	}
+	
+	public static DatagramSocket getSocket() {
+		return socket;
 	}
 	
 	public static void setSocket(DatagramSocket socket) {
-		SOCKET = socket;
+		ConnectionInfo.socket = socket;
+	}
+	
+	public static String getName() {
+		return name;
 	}
 	
 	public static void setName(String name) {
-		NAME = name;
+		ConnectionInfo.name = name;
 	}
+	
+	public static int getId() {
+		return id;
+	}
+	
+	public static void setId(int id) {
+		ConnectionInfo.id = id;
+	}
+	
+	public static float[][] getPlayerData() {
+		return playerData;
+	}
+	
+	public static void setPlayerData(float[][] playerData) {
+		ConnectionInfo.playerData = playerData;
+	}
+	
+	public static boolean isFirstPacketReceived() {
+		return firstPacketReceived;
+	}
+	public static void setFirstPacketReceived() {
+		firstPacketReceived = true;
+	}
+	
+
 }

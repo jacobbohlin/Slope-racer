@@ -1,40 +1,45 @@
 package client;
 
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-
-import client.ClientOld.ConnectionException;
+import java.net.SocketTimeoutException;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-public class ConnectService extends Service<String> {
-	private final int PORT = ConnectionInfo.PORT;
-	private final InetAddress IP = ConnectionInfo.IP;
-	private final DatagramSocket SOCKET = ConnectionInfo.SOCKET;
-	private final String NAME = ConnectionInfo.NAME;
+public class ConnectService extends Service<Void> {
+	private String id;
 
 	@Override
-	protected Task<String> createTask() {
-		Task t = new Task<String>() {
+	protected Task<Void> createTask() {
+		Task<Void> t = new Task<Void>() {
 			@Override
-			protected String call() throws Exception {
-				byte[] handshake = ("connect;" + NAME).getBytes();
+			protected Void call() throws Exception {
+				byte[] handshake = ("connect;" + ConnectionInfo.getName()).getBytes();
 				DatagramPacket connect = new DatagramPacket(handshake, handshake.length);
-				connect.setAddress(IP);
-				connect.setPort(PORT);
-				SOCKET.send(connect);
+				connect.setAddress(ConnectionInfo.getIp());
+				connect.setPort(ConnectionInfo.getPort());
+				ConnectionInfo.getSocket().send(connect);
 				DatagramPacket response = new DatagramPacket(new byte[1000], 1000);
-				SOCKET.setSoTimeout(1000);
-				SOCKET.receive(response);
-				if(response.getPort() == -1) {
+				ConnectionInfo.getSocket().setSoTimeout(1000);
+				System.out.println("Waiting for response....");
+				try {
+					ConnectionInfo.getSocket().receive(response);
+				} catch (SocketTimeoutException e) {
 					System.out.println("Trying to connect...");
-					return "Trying to connect...";			
-				} 
-				System.out.println("Connected " + new String(response.getData(), 0, response.getLength()));
-				return "Connected";
+					return null;
+				}
+				if (response.getPort() != -1) {
+					byte[] data = response.getData();
+					String s = new String(data, 0, data.length);
+					ConnectionInfo.setId(Integer.parseInt(s.substring(4, 5)));
+					System.out.println("Connected " + s);				
+				}
+				return null;
 			}
 		};
 		return t;
+	}
+	
+	public String getId() {
+		return id;
 	}
 }

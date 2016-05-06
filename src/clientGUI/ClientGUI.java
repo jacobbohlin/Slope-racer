@@ -16,6 +16,8 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -40,10 +42,10 @@ public class ClientGUI extends Application {
 	private static final float RATIO = 30;
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW };
 	private Stage stage;
-	private Client client;
 	private Group root;
 	private final double HEIGHT = 600, WIDTH = 800;
 	private Circle[] circles;
+	private final Timeline timeline = new Timeline();
 	// private WaitForPlayerDialog d;
 
 	public static void main(String[] args) {
@@ -63,7 +65,6 @@ public class ClientGUI extends Application {
 		drawStage();
 
 		// Frame events.
-		final Timeline timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		Duration duration = Duration.seconds(1.0 / 30.0); // Set duration for
@@ -74,13 +75,13 @@ public class ClientGUI extends Application {
 
 			public void handle(ActionEvent t) {
 				// What happens every frame.
-				if (firstDraw) {
-					initialDraw();
-				} else {
-					update();
+				if(ConnectionInfo.isFirstPacketReceived()){
+					if (firstDraw) {
+						initialDraw();
+					} else {
+						update();
+					}				
 				}
-				client.sendUpdate(getMouseX(), getMouseY());
-
 			}
 		};
 
@@ -95,16 +96,19 @@ public class ClientGUI extends Application {
 		stage.show();
 		System.out.println("Showing GUI");
 		setup();
-//		timeline.playFromStart();
+		// timeline.playFromStart();
 	}
-
+	
+	/**
+	 * Shows the setup dialog where the user enters their name and IP of the server.
+	 */
 	private void setup() {
 		ConnectDialog dialog = new ConnectDialog();
 		dialog.showAndWait();
 		try {
 			InetAddress ip = InetAddress.getByName(dialog.getAddress());
 			ConnectionInfo.setName(dialog.getName());
-			ConnectionInfo.setIP(ip);
+			ConnectionInfo.setIp(ip);
 			ConnectionInfo.setPort(8888);
 			DatagramSocket socket = new DatagramSocket();
 			socket.setSoTimeout(1000);
@@ -113,20 +117,24 @@ public class ClientGUI extends Application {
 			e.printStackTrace();
 		}
 		final ConnectService cs = new ConnectService();
-		final ReceiveService rs = new ReceiveService();
 		for (int i = 0; i < 3; i++) {
-			if(!cs.isRunning()) {
-				cs.reset();
-				cs.start();	
-				try {
-					Thread.sleep(1050);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			System.out.println(i);
+			cs.reset();
+			cs.start();
+			try {
+				Thread.sleep(1010);
+				if(ConnectionInfo.getId() != -1) {
+					break;
 				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
+		System.out.println("Klarade loopen!");
+		ReceiveService rs = new ReceiveService();
+		rs.start();
+		timeline.playFromStart();
 	}
-
 
 	/**
 	 * Draws the static game stage.
@@ -141,13 +149,11 @@ public class ClientGUI extends Application {
 
 	/**
 	 * Draws the player figures and places them in their initial position.
-	 * 
-	 * @param pos
-	 *            Position of all players.
+	 * @param pos Position of all players.         
 	 */
 	public void initialDraw() {
 		System.out.println("-------------------------Drawing circles------------------------");
-		float[][] playerData = client.getPlayerData();
+		float[][] playerData = ConnectionInfo.getPlayerData();
 		circles = new Circle[playerData.length];
 		float[] indivPos = new float[2/* pos[0].length */];
 		for (int i = 0; i < playerData.length; i++) {
@@ -163,13 +169,11 @@ public class ClientGUI extends Application {
 
 	/**
 	 * Updates position of all players.
-	 * 
-	 * @param pos
-	 *            Positions of all players.
+	 * @param pos Positions of all players.           
 	 */
 	public void update() {
 		System.out.println("---------------UPDATING-------------");
-		float[][] playerData = client.getPlayerData();
+		float[][] playerData = ConnectionInfo.getPlayerData();
 		float[] indivPos = new float[2/* pos[0].length */];
 		for (int i = 0; i < playerData.length; i++) {
 			for (int k = 0; k < 2 /* pos[i].length */; k++) {
@@ -194,6 +198,13 @@ public class ClientGUI extends Application {
 	private int getMouseY() {
 		return (int) MouseInfo.getPointerInfo().getLocation().getY();
 		// TODO Update to percentage of screen instead of pixels.
+	}
+	
+	/**
+	 * Starts the application timeline which will draw 30 times per second.
+	 */
+	private void startTimeLine() {
+		timeline.playFromStart();
 	}
 
 	private class WaitForPlayerDialog extends Dialog {
