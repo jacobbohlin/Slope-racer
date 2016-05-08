@@ -16,6 +16,7 @@ public class GameWorld {
 	private boolean allowSleepingObjects;
 	private static HashMap<InetAddress, Player> players;
 	private HashMap<InetAddress, MouseBall> mouseBalls;
+	private HashMap<InetAddress, Skier> skiers;
 	
 	public GameWorld(HashMap<InetAddress, Player> players){
 		this.players = players;
@@ -25,9 +26,19 @@ public class GameWorld {
 		allowSleepingObjects = true;
 		world = new World(gravity);
 		world.setAllowSleep(allowSleepingObjects);
-		createMouseBalls();
+//		createMouseBalls();
+		createSkiers();
 	}
 	
+	private void createSkiers() {
+		for(Entry<InetAddress, Player> e : players.entrySet()){
+			Player p = e.getValue();
+			Vec2 position = new Vec2(10, 1);
+			InetAddress addr = p.getAddress();
+			skiers.put(addr, new Skier(position));
+		}		
+	}
+
 	/**
 	 * Creates a mouseBall for each player to play with
 	 */
