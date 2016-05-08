@@ -14,6 +14,7 @@ public class ServerManager extends TimerTask {
 		// this.gui = gui;
 		connector = new ClientConnector();
 		connector.start();
+		System.out.println("Server started");
 	}
 
 	public void startScanning() {

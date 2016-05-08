@@ -34,9 +34,10 @@ public class ClientGUI extends Application {
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW };
 	private Group root;
 	private final double HEIGHT = 600, WIDTH = 800;
-	private Circle[] circles;
+	// private Circle[] circles;
+	private Rectangle[] rectangles;
 	private final Timeline timeline = new Timeline();
-	private final float FPS = 1/60f;
+	private final float FPS = 1 / 60f;
 	private ConnectDialog connectDialog;
 	// private WaitForPlayerDialog d;
 
@@ -53,20 +54,20 @@ public class ClientGUI extends Application {
 		stage.setResizable(false);
 
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
-		drawStage();
+		// drawStage();
 
 		// Frame events.
 		timeline.setCycleCount(Timeline.INDEFINITE);
 
 		Duration duration = Duration.seconds(FPS); // Set duration for
-												   // frame, 60fps.
+													// frame, 60fps.
 
 		// Create an ActionEvent, on trigger it executes a world time step.
 		EventHandler<ActionEvent> ae = new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent t) {
 				// What happens every frame.
-				if(ConnectionInfo.isFirstPacketReceived()){
+				if (ConnectionInfo.isFirstPacketReceived()) {
 					if (firstDraw) {
 						firstDraw = false;
 						initialDraw();
@@ -91,12 +92,13 @@ public class ClientGUI extends Application {
 		connectDialog = new ConnectDialog();
 		setup();
 	}
-	
+
 	/**
-	 * Shows the setup dialog where the user enters their name and IP of the server.
+	 * Shows the setup dialog where the user enters their name and IP of the
+	 * server.
 	 */
 	private void setup() {
-		for(;;) {
+		for (;;) {
 			try {
 				connectDialog.showAndWait();
 				InetAddress ip = InetAddress.getByName(connectDialog.getAddress());
@@ -110,17 +112,17 @@ public class ClientGUI extends Application {
 				connectDialog.wrongIP();
 			} catch (SocketException e1) {
 				e1.printStackTrace();
-			}		
+			}
 		}
 		for (int i = 0; i < 3; i++) {
 			System.out.println(i);
 			new Thread(new ConnectTask()).start();
 			try {
 				Thread.sleep(1010);
-				if(ConnectionInfo.getId() != -1) {
+				if (ConnectionInfo.getId() != -1) {
 					break;
 				}
-				if(i == 2) {
+				if (i == 2) {
 					connectDialog.timeOut();
 					setup();
 				}
@@ -137,48 +139,74 @@ public class ClientGUI extends Application {
 	/**
 	 * Draws the static game stage.
 	 */
-	private void drawStage() {
-		// d.close();
-		Rectangle floor = new Rectangle(WIDTH, 15, Color.BLACK);
-		floor.setX(0);
-		floor.setY(HEIGHT - 15);
-		root.getChildren().add(floor);
-	}
+	// private void drawStage() {
+	// // d.close();
+	// Rectangle floor = new Rectangle(WIDTH, 15, Color.BLACK);
+	// floor.setX(0);
+	// floor.setY(HEIGHT - 15);
+	// root.getChildren().add(floor);
+	// }
+
+	// public void initialDraw() {
+	// float[][] playerData = ConnectionInfo.getPlayerData();
+	// circles = new Circle[playerData.length];
+	// float[] indivPos = new float[2/* pos[0].length */];
+	// for (int i = 0; i < playerData.length; i++) {
+	// for (int k = 0; k < 2 /* pos[i].length */; k++) {
+	// indivPos[k] = playerData[i][k] * RATIO;
+	// }
+	// circles[i] = new Circle(20, COLORES[i]);
+	// circles[i].setLayoutX(indivPos[0] + 100);
+	// circles[i].setLayoutY(indivPos[1] + 100);
+	// root.getChildren().add(circles[i]);
+	// }
+	// }
 
 	/**
 	 * Draws the player figures and places them in their initial position.
-	 * @param pos Position of all players.         
+	 * @param pos Position of all players.   
 	 */
 	public void initialDraw() {
-//		System.out.println("-------------------------Drawing circles------------------------");
 		float[][] playerData = ConnectionInfo.getPlayerData();
-		circles = new Circle[playerData.length];
+		rectangles = new Rectangle[playerData.length];
 		float[] indivPos = new float[2/* pos[0].length */];
 		for (int i = 0; i < playerData.length; i++) {
 			for (int k = 0; k < 2 /* pos[i].length */; k++) {
 				indivPos[k] = playerData[i][k] * RATIO;
 			}
-			circles[i] = new Circle(20, COLORES[i]);
-			circles[i].setLayoutX(indivPos[0] + 100);
-			circles[i].setLayoutY(indivPos[1] + 100);
-			root.getChildren().add(circles[i]);
+			rectangles[i] = new Rectangle(20, 20);
+			rectangles[i].setLayoutX(indivPos[0] - rectangles[i].getWidth() + 100);
+			rectangles[i].setLayoutY(indivPos[1] - rectangles[i].getHeight() + 100);
+			root.getChildren().add(rectangles[i]);
 		}
 	}
+	// public void update() {
+	// float[][] playerData = ConnectionInfo.getPlayerData();
+	// float[] indivPos = new float[2/* pos[0].length */];
+	// for (int i = 0; i < playerData.length; i++) {
+	// for (int k = 0; k < 2 /* pos[i].length */; k++) {
+	// indivPos[k] = playerData[i][k] * RATIO;
+	// }
+	// circles[i].setLayoutX(indivPos[0]);
+	// circles[i].setLayoutY(indivPos[1]);
+	// }
+	// }
 
 	/**
 	 * Updates position of all players.
-	 * @param pos Positions of all players.           
+	 * @param pos Positions of all players.          
 	 */
 	public void update() {
-//		System.out.println("---------------UPDATING-------------");
 		float[][] playerData = ConnectionInfo.getPlayerData();
 		float[] indivPos = new float[2/* pos[0].length */];
 		for (int i = 0; i < playerData.length; i++) {
 			for (int k = 0; k < 2 /* pos[i].length */; k++) {
 				indivPos[k] = playerData[i][k] * RATIO;
 			}
-			circles[i].setLayoutX(indivPos[0]);
-			circles[i].setLayoutY(indivPos[1]);
+			System.out.println(indivPos[0]);
+			System.out.println(indivPos[1]);
+			rectangles[i].setLayoutX(indivPos[0] - rectangles[i].getWidth());
+			rectangles[i].setLayoutY(indivPos[1] - rectangles[i].getHeight());
 		}
 	}
 
@@ -187,7 +215,7 @@ public class ClientGUI extends Application {
 	 */
 	private float getMouseX() {
 		return (float) (MouseInfo.getPointerInfo().getLocation().getX() / SCREEN_WIDTH * 100);
-		
+
 	}
 
 	/**
@@ -198,13 +226,13 @@ public class ClientGUI extends Application {
 	}
 
 	/* WORK IN PROGRESS */
-//	private class WaitForPlayerDialog extends Dialog {
-//
-//		private WaitForPlayerDialog() {
-//			setTitle("Slope Racer");
-//			setHeaderText(null);
-//			setContentText("Waiting for game to start...");
-//			showAndWait();
-//		}
-//	}
+	// private class WaitForPlayerDialog extends Dialog {
+	//
+	// private WaitForPlayerDialog() {
+	// setTitle("Slope Racer");
+	// setHeaderText(null);
+	// setContentText("Waiting for game to start...");
+	// showAndWait();
+	// }
+	// }
 }

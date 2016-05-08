@@ -16,6 +16,7 @@ public class ConnectDialog extends Dialog {
 	
 	public ConnectDialog() {
 		setTitle("Slope Racer");
+		setResizable(false);
 		setHeaderText(null);
 		ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
 		getDialogPane().getButtonTypes().addAll(connectButtonType, ButtonType.CLOSE);
@@ -30,7 +31,7 @@ public class ConnectDialog extends Dialog {
 		nickname.setText("JAMES");// TA BORT
 		address = new TextField();
 		// address.setPromptText("127.0.0.1");
-		address.setText("192.168.1.34");// TA BORT
+		address.setText("localhost");// TA BORT
 
 		grid.add(new Label("Nickname:"), 0, 0);
 		grid.add(nickname, 1, 0);
