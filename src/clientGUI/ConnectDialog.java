@@ -6,6 +6,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 
@@ -18,7 +19,7 @@ public class ConnectDialog extends Dialog {
 		setHeaderText(null);
 		ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
 		getDialogPane().getButtonTypes().addAll(connectButtonType, ButtonType.CLOSE);
-
+		getDialogPane().getScene().getWindow().setOnCloseRequest(event -> event.consume());
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -42,7 +43,10 @@ public class ConnectDialog extends Dialog {
 		// -> {
 		// connectButton.setDisable(newValue.trim().isEmpty());
 		// });
-
+		Button closeButton = (Button) getDialogPane().lookupButton(ButtonType.CLOSE);
+		closeButton.setOnAction((Event) -> {
+			System.exit(0);
+		});
 		getDialogPane().setContent(grid);
 	}
 	
@@ -52,5 +56,13 @@ public class ConnectDialog extends Dialog {
 	
 	public String getName() {
 		return nickname.getText();
+	}
+	
+	public void wrongIP() {
+		setHeaderText("Invalid IP-address.");
+	}
+	
+	public void timeOut() {
+		setHeaderText("Unable to connect.");
 	}
 }

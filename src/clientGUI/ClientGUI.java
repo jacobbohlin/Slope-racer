@@ -37,6 +37,7 @@ public class ClientGUI extends Application {
 	private Circle[] circles;
 	private final Timeline timeline = new Timeline();
 	private final float FPS = 1/60f;
+	private ConnectDialog connectDialog;
 	// private WaitForPlayerDialog d;
 
 	public static void main(String[] args) {
@@ -87,6 +88,7 @@ public class ClientGUI extends Application {
 		stage.setScene(scene);
 		stage.show();
 		System.out.println("Showing GUI");
+		connectDialog = new ConnectDialog();
 		setup();
 	}
 	
@@ -94,17 +96,21 @@ public class ClientGUI extends Application {
 	 * Shows the setup dialog where the user enters their name and IP of the server.
 	 */
 	private void setup() {
-		ConnectDialog dialog = new ConnectDialog();
-		dialog.showAndWait();
-		try {
-			InetAddress ip = InetAddress.getByName(dialog.getAddress());
-			ConnectionInfo.setName(dialog.getName());
-			ConnectionInfo.setIp(ip);
-			ConnectionInfo.setPort(8888);
-			DatagramSocket socket = new DatagramSocket();
-			ConnectionInfo.setSocket(socket);
-		} catch (UnknownHostException | SocketException e) {
-			e.printStackTrace();
+		for(;;) {
+			try {
+				connectDialog.showAndWait();
+				InetAddress ip = InetAddress.getByName(connectDialog.getAddress());
+				ConnectionInfo.setName(connectDialog.getName());
+				ConnectionInfo.setIp(ip);
+				ConnectionInfo.setPort(8888);
+				DatagramSocket socket = new DatagramSocket();
+				ConnectionInfo.setSocket(socket);
+				break;
+			} catch (UnknownHostException e) {
+				connectDialog.wrongIP();
+			} catch (SocketException e1) {
+				e1.printStackTrace();
+			}		
 		}
 		for (int i = 0; i < 3; i++) {
 			System.out.println(i);
@@ -114,8 +120,12 @@ public class ClientGUI extends Application {
 				if(ConnectionInfo.getId() != -1) {
 					break;
 				}
+				if(i == 2) {
+					connectDialog.timeOut();
+					setup();
+				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				connectDialog.timeOut();
 			}
 		}
 		System.out.println("Klarade loopen!");
