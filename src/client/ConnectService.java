@@ -38,8 +38,4 @@ public class ConnectService extends Service<Void> {
 		};
 		return t;
 	}
-	
-	public String getId() {
-		return id;
-	}
 }

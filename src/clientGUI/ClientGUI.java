@@ -106,11 +106,9 @@ public class ClientGUI extends Application {
 		} catch (UnknownHostException | SocketException e) {
 			e.printStackTrace();
 		}
-		final ConnectService cs = new ConnectService();
 		for (int i = 0; i < 3; i++) {
 			System.out.println(i);
-			cs.reset();
-			cs.start();
+			new Thread(new ConnectTask()).start();
 			try {
 				Thread.sleep(1010);
 				if(ConnectionInfo.getId() != -1) {

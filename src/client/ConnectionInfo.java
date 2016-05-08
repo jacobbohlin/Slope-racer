@@ -11,8 +11,9 @@ public class ConnectionInfo {
 	private static int id = -1;
 	private static float[][] playerData;
 	private static boolean firstPacketReceived = false;
+
 	
-	public static InetAddress getIp() {
+	public static InetAddress getIp() { 
 		return ip;
 	}
 	
@@ -63,9 +64,8 @@ public class ConnectionInfo {
 	public static boolean isFirstPacketReceived() {
 		return firstPacketReceived;
 	}
+	
 	public static void setFirstPacketReceived() {
 		firstPacketReceived = true;
 	}
-	
-
 }
