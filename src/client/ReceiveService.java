@@ -17,7 +17,7 @@ public class ReceiveService extends Service<Void>{
 			@Override
 			protected Void call() throws Exception {
 				for(;;) {
-					System.out.println();//TA INTE BORT!!!
+//					System.out.println();//TA INTE BORT!!!
 					DatagramPacket dp = new DatagramPacket(new byte[1000], 1000);
 					try {
 						ConnectionInfo.getSocket().receive(dp);
@@ -36,7 +36,7 @@ public class ReceiveService extends Service<Void>{
 //							for (int j = 0; j < playerData[0].length; j++) {
 //								System.out.println(playerData[i][j]);
 //							}
-//						}
+//						} 
 					} catch (ClassNotFoundException e) {
 						System.out.println("Could not recreate float matrix");
 						e.printStackTrace();
