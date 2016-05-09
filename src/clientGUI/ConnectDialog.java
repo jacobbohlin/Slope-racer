@@ -10,10 +10,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 
-public class ConnectDialog extends Dialog {
+public class ConnectDialog extends Dialog<Void> {
 	private TextField address;
 	private TextField nickname;
 	
+	/**
+	 * Constructs a dialog with two Text input fields for nickname and IP-address of the server.
+	 */
 	public ConnectDialog() {
 		setTitle("Slope Racer");
 		setResizable(false);
@@ -51,14 +54,23 @@ public class ConnectDialog extends Dialog {
 		getDialogPane().setContent(grid);
 	}
 	
+	/**
+	 * @return The input of the IP-address text field.
+	 */
 	public String getAddress() {
 		return address.getText();
 	}
 	
+	/**
+	 * @return The input of the Name text field.
+	 */
 	public String getName() {
 		return nickname.getText();
 	}
 	
+	/**
+	 * Sets the header text if the IP-address is invalid.
+	 */
 	public void wrongIP() {
 		setHeaderText("Invalid IP-address.");
 	}

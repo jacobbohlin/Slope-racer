@@ -1,59 +1,28 @@
 package clientGUI;
 
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.canvas.GraphicsContext;
 
 public class Skier {
-	private Rectangle torso, arms,  legs, boots, calves, skis;
-	private Circle head;
+	private BodyPart torso, arms, legs, lowerLegs;
+	private BodyPart[] bodyParts;
 	private final int RATIO = 30;
 	
 	public Skier() {
-		torso = new Rectangle(0.25 * RATIO, 1 * RATIO);
-		arms = new Rectangle(0.15 * RATIO, 1 * RATIO);
-		legs = new Rectangle(0.25 * RATIO, 0.5 * RATIO);
-		calves = new Rectangle(0.2 * RATIO, 0.3 * RATIO);
-		boots = new Rectangle(0.4 * RATIO, 0.2 * RATIO);
-		skis = new Rectangle(2 * RATIO, 0.02 * RATIO);
-		head = new Circle(0.08 * RATIO);
-		bindTorsoToHead();
-		bindCalvesToSkis();
-		
+		torso = new BodyPart(0.25 * RATIO, 1.16 * RATIO);
+		arms = new BodyPart(0.15 * RATIO, 1.2 * RATIO);
+		legs = new BodyPart(0.25 * RATIO, 0.5 * RATIO);
+		lowerLegs = new BodyPart(2 * RATIO, 0.52 * RATIO);
+		bodyParts = new BodyPart[]{torso, arms, legs, lowerLegs};
+	}
+
+	public BodyPart[] getBodyParts() {
+		return bodyParts;
 	}
 	
-	public void setTorsoX(float x) {
-		torso.setLayoutX(x - torso.getArcWidth()/2);
+	public void draw(GraphicsContext gc) {
+		for(int i = 0; i < bodyParts.length; i++) {
+			gc.fillRect(bodyParts[i].getxPos(), bodyParts[i].getyPos(), bodyParts[i].getWidth(), bodyParts[i].getHeight());
+		}
 	}
 	
-	public void setTorsoY(float y) {
-		torso.setLayoutY(y - torso.getArcHeight()/2);
-	}
-	
-	/**
-	 * Binds the Head and Torso together.
-	 */
-	private void bindTorsoToHead() {
-		Line line = new Line();
-		line.startXProperty().bind(head.centerXProperty());
-		line.startYProperty().bind(head.centerYProperty());
-		line.endXProperty().bind(torso.xProperty().add(torso.getWidth()/2));
-		line.endYProperty().bind(torso.yProperty());
-	}
-	
-	/**
-	 * Binds the Calves, Boots and Skis together.
-	 */
-	private void bindCalvesToSkis() {
-		Line line0 = new Line();
-		line0.startXProperty().bind(calves.xProperty().add(calves.getWidth()/2));
-		line0.startYProperty().bind(calves.yProperty().add(calves.getHeight()));
-		line0.endXProperty().bind(boots.xProperty().add(calves.getWidth()/2));
-		line0.endYProperty().bind(boots.yProperty());
-		Line line1 = new Line();
-		line1.startXProperty().bind(boots.xProperty().add(boots.getWidth()/2));
-		line1.startYProperty().bind(boots.yProperty().add(boots.getHeight()));
-		line1.endXProperty().bind(skis.xProperty().add(skis.getWidth()/3));
-		line1.endYProperty().bind(skis.yProperty());
-	}
 }
