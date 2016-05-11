@@ -35,7 +35,6 @@ public class ClientConnector extends Thread {
 				dp = new DatagramPacket(new byte[1000], 1000);
 				socket.receive(dp);
 				String input = new String(dp.getData(), 0, dp.getLength());
-				System.out.println("Received packet: " + input);
 				if (input.startsWith("update;")) {
 					update(input.substring(7));
 				} else if (input.startsWith("connect;")) {
@@ -75,6 +74,8 @@ public class ClientConnector extends Thread {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
 		oos.writeObject(GameWorld.getPlayerData());
+		System.out.println(GameWorld.getPlayerData()[0][0]);
+		System.out.println(GameWorld.getPlayerData()[0][1]);
 		byte[] buf = baos.toByteArray();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
