@@ -17,7 +17,6 @@ public class ReceiveService extends Service<Void>{
 			@Override
 			protected Void call() throws Exception {
 				for(;;) {
-//					System.out.println();//TA INTE BORT!!!
 					DatagramPacket dp = new DatagramPacket(new byte[1000], 1000);
 					try {
 						ConnectionInfo.getSocket().receive(dp);
@@ -31,12 +30,12 @@ public class ReceiveService extends Service<Void>{
 						playerData = (float[][]) ois.readObject();
 						ConnectionInfo.setPlayerData(playerData);
 						ConnectionInfo.setFirstPacketReceived();
-//						 System.out.println("Playerdata matrix: ");
-//						for (int i = 0; i < playerData.length; i++) {
-//							for (int j = 0; j < playerData[0].length; j++) {
-//								System.out.println(playerData[i][j]);
-//							}
-//						} 
+						System.out.println("Playerdata matrix: ");
+						for (int i = 0; i < playerData.length; i++) {
+							for (int j = 0; j < playerData[0].length; j++) {
+								System.out.println(playerData[i][j]);
+							}
+						} 
 					} catch (ClassNotFoundException e) {
 						System.out.println("Could not recreate float matrix");
 						e.printStackTrace();

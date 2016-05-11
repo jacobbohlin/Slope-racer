@@ -34,7 +34,7 @@ public class ConnectDialog extends Dialog<Void> {
 		nickname.setText("JAMES");// TA BORT
 		address = new TextField();
 		// address.setPromptText("127.0.0.1");
-		address.setText("localhost");// TA BORT
+		address.setText("falk-2");// TA BORT
 
 		grid.add(new Label("Nickname:"), 0, 0);
 		grid.add(nickname, 1, 0);
