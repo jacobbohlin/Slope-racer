@@ -18,10 +18,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 //import javafx.scene.control.Dialog;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -30,12 +35,11 @@ public class ClientGUI extends Application {
 	private final double SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	private final double SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	private boolean firstDraw = true;
-	private final float RATIO = (float) (SCREEN_HEIGHT/21);
-	private final double TO_DEGREES = Math.PI / 180;
+	private final float RATIO = (float) (SCREEN_HEIGHT/21.6);
+//	private final double TO_DEGREES = Math.PI / 180;
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW };
 	private Group root;
 	private Circle[] circles;
-	/** MouseBall */
 	private final Timeline timeline = new Timeline();
 	private final float FPS = 1 / 60f;
 	private ConnectDialog connectDialog;
@@ -90,7 +94,7 @@ public class ClientGUI extends Application {
 		KeyFrame frame = new KeyFrame(duration, ae, null, null);
 		timeline.getKeyFrames().add(frame);
 		
-		root.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
 
             if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) {
             } else if( e.isPrimaryButtonDown()) {
@@ -99,6 +103,7 @@ public class ClientGUI extends Application {
                 ability = 1;
             }
         });
+		
 		new StandardLevel(root, SCREEN_WIDTH, SCREEN_HEIGHT, RATIO);
 		
 		stage.setScene(scene);
@@ -153,16 +158,6 @@ public class ClientGUI extends Application {
 	}
 
 	/**
-	 * Draws the static game stage.
-	 */
-//	 private void drawStage() {
-//	 Rectangle floor = new Rectangle(WIDTH, 15, Color.BLACK);
-//	 floor.setX(0);
-//	 floor.setY(HEIGHT - 15);
-//	 root.getChildren().add(floor);
-//	 }
-
-	/**
 	 * Draws the player figures and places them in their correct position.
 	 * 
 	 * @param pos
@@ -180,7 +175,12 @@ public class ClientGUI extends Application {
 			circles[i].setLayoutX(indivValues[0]);
 			circles[i].setLayoutY(indivValues[1]);
 			circles[i].setRadius(indivValues[2]);
-			circles[i].setFill(COLORES[i]);
+			circles[i].setStroke(COLORES[i]);
+			circles[i].setStrokeWidth(5);
+			circles[i].setFill(Color.AZURE);
+			Text name = new Text(ConnectionInfo.getPlayerNames(i));
+			name.setFont(new Font(5));
+			name.setBoundsType(TextBoundsType.VISUAL);
 			root.getChildren().add(circles[i]);
 		}
 	}

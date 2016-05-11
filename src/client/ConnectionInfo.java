@@ -11,8 +11,11 @@ public class ConnectionInfo {
 	private static int id = -1;
 	private static float[][] playerData;
 	private static boolean firstPacketReceived = false;
+	private static String[] playerNames;
 
 	
+	
+
 	public static InetAddress getIp() { 
 		return ip;
 	}
@@ -67,5 +70,13 @@ public class ConnectionInfo {
 	
 	public static void setFirstPacketReceived() {
 		firstPacketReceived = true;
+	}
+	
+	public static String getPlayerNames(int i) {
+		return playerNames[i];
+	}
+
+	public static void setPlayerNames(String[] playerNames) {
+		ConnectionInfo.playerNames = playerNames;
 	}
 }
