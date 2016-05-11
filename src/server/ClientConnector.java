@@ -64,9 +64,11 @@ public class ClientConnector extends Thread {
 
 		if(!input.isEmpty()){
 			String[] inputArray = input.split(";");
-			int mouseX = (int) Double.parseDouble(inputArray[0]);			
+			int mouseX = (int) Double.parseDouble(inputArray[0]);
+//			System.out.println(inputArray[0]);
 			int mouseY = (int) Double.parseDouble(inputArray[1]);
-			players.get(dp.getAddress()).setMousePos(mouseX, mouseY);
+			int mouseClick = (int) Double.parseDouble(inputArray[2]);
+			players.get(dp.getAddress()).setMousePos(mouseX, mouseY, mouseClick);
 		}
 	}
 
@@ -74,8 +76,8 @@ public class ClientConnector extends Thread {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
 		oos.writeObject(GameWorld.getPlayerData());
-		System.out.println(GameWorld.getPlayerData()[0][0]);
-		System.out.println(GameWorld.getPlayerData()[0][1]);
+//		System.out.println(GameWorld.getPlayerData()[0][0]);
+//		System.out.println(GameWorld.getPlayerData()[0][1]);
 		byte[] buf = baos.toByteArray();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		for (Entry<InetAddress, Player> e : players.entrySet()) {

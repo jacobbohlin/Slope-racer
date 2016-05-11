@@ -8,13 +8,17 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
 public class MouseBall {
+	
+	private int boostCooldown;
 
 	private Body body;
 
 	private Vec2 position;
+	private float radius;
 
 	public MouseBall(Vec2 position) {
 		this.position = position;
+		radius = 0.5f;
 
 		// Create a body definition for this mouseBall
 		BodyDef bd = new BodyDef();
@@ -24,7 +28,8 @@ public class MouseBall {
 
 		// Create a shape for this mouseBall
 		CircleShape cs = new CircleShape();
-		cs.m_radius = 0.5f;
+		cs.m_radius = radius;
+		
 
 		// Create a fixture for this mouseBall
 		FixtureDef fd = new FixtureDef();
@@ -37,6 +42,10 @@ public class MouseBall {
 		body.createFixture(fd);
 	}
 	
+	public void setRadius(float radius){
+		this.radius = radius;
+	}
+	
 	public Body getBody(){
 		return body;
 	}
@@ -47,5 +56,9 @@ public class MouseBall {
 	
 	public float getPositionY(){
 		return body.getPosition().y;
+	}
+
+	public float getRadius() {
+		return radius;
 	}
 }

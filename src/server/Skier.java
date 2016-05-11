@@ -9,6 +9,8 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
+import org.jbox2d.dynamics.joints.WeldJoint;
+import org.jbox2d.dynamics.joints.WeldJointDef;
 
 public class Skier {
 
@@ -24,7 +26,8 @@ public class Skier {
 	private Body midBody;
 	private Body lowerBody;
 	
-	private RevoluteJoint waistJoint;
+	private WeldJoint waistJoint;
+//	private RevoluteJoint waistJoint;
 	private RevoluteJoint shoulderJoint;
 	private RevoluteJoint kneeJoint;
 
@@ -36,37 +39,68 @@ public class Skier {
 
 		upperBody = createUpperBody();
 		
-		armsBody = createArms();
-
+//		armsBody = createArms();
+//
 		midBody = createMidBody();
-
-		lowerBody = createLowerBody();
+//
+//		lowerBody = createLowerBody();
 		
 //		lowerBody.setAngularVelocity((float)Math.PI*2);
 
 		waistJoint = createWaistJoint();
+//		
+//		shoulderJoint = createShoulderJoint();
+//		
+//		kneeJoint = createKneeJoint();
 		
-		shoulderJoint = createShoulderJoint();
-		
-		kneeJoint = createKneeJoint();
+//		upperBody.applyForceToCenter(new Vec2(10f, 0f));
 		
 	}
 
 	
 
-	private RevoluteJoint createWaistJoint() {
-		RevoluteJointDef waistJointDef = new RevoluteJointDef();
-		waistJointDef.bodyA = upperBody;
-		waistJointDef.bodyB = midBody;
+//	private RevoluteJoint createWaistJoint() {
+//		RevoluteJointDef waistJointDef = new RevoluteJointDef();
+//		waistJointDef.bodyA = upperBody;
+//		waistJointDef.bodyB = midBody;
+//		waistJointDef.collideConnected = false;
+//		waistJointDef.localAnchorA.set(new Vec2(0f, 0.5f));
+//		waistJointDef.localAnchorB.set(new Vec2(0f, -0.25f));
+//		
+////		waistJointDef.referenceAngle = (float)Math.PI;
+//		RevoluteJoint waistJoint = (RevoluteJoint)GameWorld.world.createJoint(waistJointDef);
+////		waistJoint.enableMotor(false);
+////		waistJoint.enableLimit(false);
+////		waistJoint.setLimits((float)Math.PI/2, (float)Math.PI);
+////		waistJoint.setMotorSpeed(-0.5f);	
+//		Vec2 anchorA = new Vec2(); 
+//		waistJoint.getAnchorA(anchorA);
+//		Vec2 anchorB = new Vec2();
+//		waistJoint.getAnchorB(anchorB);
+//		System.out.println(anchorA.x + " " + anchorA.y);
+//		System.out.println(anchorB.x + " " + anchorB.y);
+//
+//		return waistJoint;
+//	}
+	
+	//TEST
+	private WeldJoint createWaistJoint() {
+		WeldJointDef waistJointDef = new WeldJointDef();
+		Vec2 anchor = upperBody.getWorldCenter();
+		waistJointDef.initialize(upperBody, midBody, anchor);
 		waistJointDef.collideConnected = false;
-		waistJointDef.localAnchorA.set(new Vec2(0f, 0.5f));
-		waistJointDef.localAnchorB.set(new Vec2(0f, -0.25f));
 //		waistJointDef.referenceAngle = (float)Math.PI;
-		RevoluteJoint waistJoint = (RevoluteJoint)GameWorld.world.createJoint(waistJointDef);
+		WeldJoint waistJoint = (WeldJoint)GameWorld.world.createJoint(waistJointDef);
 //		waistJoint.enableMotor(false);
 //		waistJoint.enableLimit(false);
 //		waistJoint.setLimits((float)Math.PI/2, (float)Math.PI);
 //		waistJoint.setMotorSpeed(-0.5f);	
+		Vec2 anchorA = new Vec2(); 
+		waistJoint.getAnchorA(anchorA);
+		Vec2 anchorB = new Vec2();
+		waistJoint.getAnchorB(anchorB);
+		System.out.println(anchorA.x + " " + anchorA.y);
+		System.out.println(anchorB.x + " " + anchorB.y);
 		
 		return waistJoint;
 	}
@@ -101,7 +135,8 @@ public class Skier {
 
 		// Create shapes
 		PolygonShape upperBodyShape = new PolygonShape();
-		upperBodyShape.setAsBox(0.25f, 1f);
+//		upperBodyShape.setAsBox(0.25f, 1f);
+		upperBodyShape.setAsBox(2.5f, 10f);
 
 		CircleShape headShape = new CircleShape();
 		headShape.m_radius = 0.08f;
@@ -110,26 +145,30 @@ public class Skier {
 		// Create fixtures
 
 		// Head
-		FixtureDef headFixture = new FixtureDef();
-		headFixture.shape = headShape;
-		headFixture.density = 1.5f;
-		headFixture.friction = 1f;
-		headFixture.restitution = 0.6f;
+		FixtureDef headFixtureDef = new FixtureDef();
+		headFixtureDef.shape = headShape;
+		headFixtureDef.density = 1.5f;
+		headFixtureDef.friction = 1f;
+		headFixtureDef.restitution = 0.6f;
+		headFixtureDef.filter.groupIndex = -1;
+	
 		// Upper Body
 		FixtureDef upperBodyFixture = new FixtureDef();
 		upperBodyFixture.shape = upperBodyShape;
 		upperBodyFixture.density = 1f;
 		upperBodyFixture.friction = 1f;
 		upperBodyFixture.restitution = 0.1f;
+		upperBodyFixture.filter.groupIndex = -1;
 
 		// Create body Definition and add body to world
 		BodyDef topDef = new BodyDef();
 		topDef.type = BodyType.DYNAMIC;
 		topDef.position.set(upperBodyPosition);
 		Body upperBody = GameWorld.world.createBody(topDef);
+		
 
 		// Add our fixtures to the body
-		upperBody.createFixture(headFixture);
+		upperBody.createFixture(headFixtureDef);
 		upperBody.createFixture(upperBodyFixture);
 
 		return upperBody;
@@ -139,13 +178,15 @@ public class Skier {
 	private Body createArms(){
 		//Create shape
 		PolygonShape armsShape = new PolygonShape();
-		armsShape.setAsBox(0.15f, 1.2f);
+//		armsShape.setAsBox(0.15f, 1.2f);
+		armsShape.setAsBox(2f, 15f);
 		
 		//Create Fixture
 		FixtureDef armsFixture = new FixtureDef();
 		armsFixture.shape = armsShape;
 		armsFixture.density = 2f;
 		armsFixture.friction = 1f;
+		armsFixture.filter.groupIndex = -1;
 		
 		//Create body definition and add body to world
 		BodyDef armsDef = new BodyDef();
@@ -163,7 +204,8 @@ public class Skier {
 
 		// Create shape
 		PolygonShape thighShape = new PolygonShape();
-		thighShape.setAsBox(0.25f, 0.5f);
+//		thighShape.setAsBox(0.25f, 0.5f);
+		thighShape.setAsBox(2f, 8f);
 
 		// Create Fixture
 		FixtureDef midFixture = new FixtureDef();
@@ -171,6 +213,7 @@ public class Skier {
 		midFixture.density = 1f;
 		midFixture.friction = 1f;
 		midFixture.restitution = 0.1f;
+		midFixture.filter.groupIndex = -1;
 
 		// Create body Definition and add body to world
 		BodyDef midDef = new BodyDef();
@@ -188,6 +231,7 @@ public class Skier {
 
 		// Create shape
 		PolygonShape calfShape = new PolygonShape();
+//		calfShape.setAsBox(0.2f, 0.5f);
 		calfShape.setAsBox(0.2f, 0.5f);
 
 		PolygonShape skiShape = new PolygonShape();
@@ -197,12 +241,14 @@ public class Skier {
 		FixtureDef calfFixture = new FixtureDef();
 		calfFixture.shape = calfShape;
 		calfFixture.density = 1f;
+		calfFixture.filter.groupIndex = -1;
 
 		FixtureDef skiFixture = new FixtureDef();
 		skiFixture.shape = skiShape;
 		skiFixture.density = 0.3f;
 		skiFixture.friction = 0.1f;
 		skiFixture.restitution = 0.3f;
+		skiFixture.filter.groupIndex = -1;
 
 		// Create body Definition and add body to world
 		BodyDef lowerDef = new BodyDef();
@@ -227,15 +273,15 @@ public class Skier {
 		result[0] = upperBody.getPosition().x;
 		result[1] = upperBody.getPosition().y;
 		result[2] = upperBody.getAngle();
-		result[3] = armsBody.getPosition().x;
-		result[4] = armsBody.getPosition().y;
-		result[5] = armsBody.getAngle();
+//		result[3] = armsBody.getPosition().x;
+//		result[4] = armsBody.getPosition().y;
+//		result[5] = armsBody.getAngle();
 		result[6] = midBody.getPosition().x;
 		result[7] = midBody.getPosition().y;
 		result[8] = midBody.getAngle();
-		result[9] = lowerBody.getPosition().x;
-		result[10] = lowerBody.getPosition().y;
-		result[11] = lowerBody.getAngle();
+//		result[9] = lowerBody.getPosition().x;
+//		result[10] = lowerBody.getPosition().y;
+//		result[11] = lowerBody.getAngle();
 		return result;
 	}
 }

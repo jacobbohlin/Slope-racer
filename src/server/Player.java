@@ -6,7 +6,7 @@ public class Player {
 	private int port;
 	private String name;
 	private InetAddress ip;
-	private int mouseX, mouseY;
+	private int mouseX, mouseY, mouseClick;
 	private final int playerNbr;
 	private static int nextPlayerNbr = 0;
 	
@@ -26,12 +26,14 @@ public class Player {
 	
 	/**
 	 * Sets the mouse position of this player.
+	 * @param mouseClick 
 	 * @param x, mouse x position in percent.
 	 * @param y, mouse y position in percent.
 	 */
-	public void setMousePos(int x, int y) {
+	public void setMousePos(int x, int y, int mouseClick) {
 		mouseX = x;
 		mouseY = y;
+		this.mouseClick = mouseClick;
 	}
 	
 	/**
@@ -60,4 +62,6 @@ public class Player {
 	public void setPort(int port) {
 		this.port = port;
 	}
+
+	
 }
