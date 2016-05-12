@@ -5,11 +5,14 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
 public class MouseBall {
 	
 	private int boostCooldown;
+	private int expandCounter;
+	private int minimizeCounter;
 
 	private Body body;
 
@@ -18,6 +21,8 @@ public class MouseBall {
 
 	public MouseBall(Vec2 position) {
 		this.position = position;
+		expandCounter = -1;
+		minimizeCounter = -1;
 		radius = 0.5f;
 
 		// Create a body definition for this mouseBall
@@ -43,7 +48,8 @@ public class MouseBall {
 	}
 	
 	public void setRadius(float radius){
-		this.radius = radius;
+		Fixture f = body.getFixtureList();
+		f.m_shape.setRadius(radius);
 	}
 	
 	public Body getBody(){
@@ -59,6 +65,31 @@ public class MouseBall {
 	}
 
 	public float getRadius() {
-		return radius;
+		return body.getFixtureList().m_shape.m_radius;
 	}
+
+	public void expand() {
+		expandCounter = 50;
+		
+	}
+	public int getExpandCounter(){
+		return expandCounter;
+	}
+
+	public void decrementExpandCounter() {
+		expandCounter -= 1;
+	}
+
+	public void minimize() {
+		minimizeCounter = 100;
+	}
+	
+	public int getMinimizeCounter(){
+		return minimizeCounter;
+	}
+	
+	public void decrementMinimizeCounter(){
+		minimizeCounter -= 1;
+	}
+	
 }
