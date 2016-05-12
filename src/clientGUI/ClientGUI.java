@@ -1,7 +1,6 @@
 package clientGUI;
 
 import java.awt.MouseInfo;
-import java.awt.Toolkit;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -11,25 +10,30 @@ import client.ConnectTask;
 import client.ConnectionInfo;
 import client.ReceiveService;
 import client.SendTask;
+import client.StartTask;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-//import javafx.scene.control.Dialog;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBoundsType;
-import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,7 +43,8 @@ public class ClientGUI extends Application {
 	private double width, height, widthMargin, heightMargin;
 	private float RATIO;
 	private boolean firstDraw = true;
-	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW };
+	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.WHEAT, Color.BLACK, Color.BLUEVIOLET };
+	private final String[] SCORE_COLORES = {"blue", "red", "green", "wheat", "black", "blueviolet"};
 	private Group root;
 	private Circle[] circles;
 	private final Timeline timeline = new Timeline();
@@ -47,6 +52,8 @@ public class ClientGUI extends Application {
 	private ConnectDialog connectDialog;
 	private WaitForPlayerDialog waitDialog;
 	private int ability = -1;
+	private VBox scoreboard;
+	private Label[] names, scores;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -126,23 +133,38 @@ public class ClientGUI extends Application {
             }
         });
 		
+		System.out.println(width);
+		System.out.println(height);
+		new StandardLevel(root, width, height, widthMargin, heightMargin, RATIO);
+		
+		createScoreboard();
+		root.getChildren().add(scoreboard);
+		
 		scene.setOnKeyPressed(ke ->{
-			if(ke.getCode() == KeyCode.TAB) {
-				
-			} else if(ke.getCode() == KeyCode.R) {
-				
-			}
+			if(ke.getCode() == KeyCode.SPACE) {
+				new Thread(new StartTask()).start();
+			} else if(ke.getCode() == KeyCode.TAB) {
+				if(!ConnectionInfo.isFirstPacketReceived()) return;
+				String[] playerNames = ConnectionInfo.getPlayerNames();
+				String[] playerScores = ConnectionInfo.getScore();
+				if(playerNames == null) return;
+				for(int i = 0; i < playerNames.length; i++) {
+					names[i+1].setText(playerNames[i] + ": ");
+					scores[i+1].setText(playerScores[i]);
+				}
+//				names.setVisible(true);
+//				scores.setVisible(true);
+				scoreboard.setVisible(true);
+			} 
 		});
 		
 		scene.setOnKeyReleased(ke ->{
 			if(ke.getCode() == KeyCode.TAB) {
-				
+//				names.setVisible(false);
+//				scores.setVisible(false);
+				scoreboard.setVisible(false);
 			}
 		});
-		
-		System.out.println(width);
-		System.out.println(height);
-		new StandardLevel(root, width, height, widthMargin, heightMargin, RATIO);
 		
 		stage.setScene(scene);
 		stage.show();
@@ -150,6 +172,37 @@ public class ClientGUI extends Application {
 		connectDialog = new ConnectDialog();
 		waitDialog = new WaitForPlayerDialog();
 		setup();
+	}
+	
+	private void createScoreboard() {
+		scoreboard = new VBox();
+		names = new Label[7];
+		scores = new Label[7];
+		GridPane layout = new GridPane();
+		layout.setPadding(new Insets(5, 20, 5, 20));
+		names[0] = new Label("Name");
+		scores[0] = new Label("Score");
+		names[0].setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+		scores[0].setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+		layout.add(names[0], 0, 0);
+		layout.add(scores[0], 2, 0);
+		for(int i = 1; i < 7; i++) {
+			names[i] = new Label();
+			scores[i] = new Label();
+			names[i].setTextFill(COLORES[i - 1]);
+			scores[i].setTextFill(COLORES[i - 1]);
+			layout.add(names[i], 0, i);
+			layout.add(scores[i], 1, i);
+		}
+		scoreboard.getChildren().add(layout);
+		scoreboard.setVgrow(layout, Priority.ALWAYS);
+		scoreboard.setPrefWidth(200);
+		scoreboard.setLayoutX(80 + widthMargin);
+		scoreboard.setLayoutY(80 + heightMargin);
+		scoreboard.setVisible(false);
+		
+		
+		
 	}
 
 	/**

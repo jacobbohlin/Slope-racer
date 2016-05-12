@@ -12,8 +12,12 @@ public class ConnectionInfo {
 	private static float[][] playerData;
 	private static boolean firstPacketReceived = false;
 	private static String[] playerNames;
+	private static String[] score;
+	private final static String[] EMPTY_SCORES = {"0", "0", "0", "0", "0", "0", "0"};
 
 	
+	
+
 	
 
 	public static InetAddress getIp() { 
@@ -72,11 +76,19 @@ public class ConnectionInfo {
 		firstPacketReceived = true;
 	}
 	
-	public static String getPlayerNames(int i) {
-		return playerNames[i];
+	public static String[] getPlayerNames() {
+		return playerNames;
 	}
 
 	public static void setPlayerNames(String[] playerNames) {
 		ConnectionInfo.playerNames = playerNames;
+	}
+	
+	public static String[] getScore() {
+		return score != null ? score : EMPTY_SCORES;
+	}
+
+	public static void setScore(String[] score) {
+		ConnectionInfo.score = score;
 	}
 }
