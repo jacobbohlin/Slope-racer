@@ -16,8 +16,10 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -28,15 +30,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.Popup;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class ClientGUI extends Application {
-	private final double SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-	private final double SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+	private final double ASPECT_RATIO = 16/9;
+	private double width, height, widthMargin, heightMargin;
+	private float RATIO;
 	private boolean firstDraw = true;
-	private final float RATIO = (float) (SCREEN_HEIGHT/21.6);
-//	private final double TO_DEGREES = Math.PI / 180;
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW };
 	private Group root;
 	private Circle[] circles;
@@ -53,12 +55,32 @@ public class ClientGUI extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		root = new Group();
+		Screen screen = Screen.getPrimary();
+		Rectangle2D bounds = screen.getVisualBounds();
+
+		stage.setX(bounds.getMinX());
+		stage.setY(bounds.getMinY());
+		final double SCREEN_WIDTH = bounds.getWidth();
+		final double SCREEN_HEIGHT = bounds.getHeight();
+		
 		System.out.println(SCREEN_WIDTH + " " + SCREEN_HEIGHT);
+		if(SCREEN_WIDTH / SCREEN_HEIGHT < ASPECT_RATIO) {
+			width = SCREEN_WIDTH;
+			height = (SCREEN_WIDTH / 16) * 9;
+		} else if (SCREEN_WIDTH / SCREEN_HEIGHT > ASPECT_RATIO) {
+			width = (SCREEN_HEIGHT / 9) * 16;
+			height = SCREEN_HEIGHT;
+		} else {
+			width = SCREEN_WIDTH;
+			height = SCREEN_HEIGHT;
+		}
+		RATIO = (float) (height / 21.6);
+		widthMargin = (SCREEN_WIDTH - width) / 2;
+		heightMargin = (SCREEN_HEIGHT - height) / 2;
 		stage.setTitle("Slope Racer");
-		stage.setFullScreen(true);
+		stage.setFullScreen(false);
 		stage.setResizable(false);
 		Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
-		//drawStage();
 
 		// Frame events.
 		timeline.setCycleCount(Timeline.INDEFINITE);
@@ -104,7 +126,23 @@ public class ClientGUI extends Application {
             }
         });
 		
-		new StandardLevel(root, SCREEN_WIDTH, SCREEN_HEIGHT, RATIO);
+		scene.setOnKeyPressed(ke ->{
+			if(ke.getCode() == KeyCode.TAB) {
+				
+			} else if(ke.getCode() == KeyCode.R) {
+				
+			}
+		});
+		
+		scene.setOnKeyReleased(ke ->{
+			if(ke.getCode() == KeyCode.TAB) {
+				
+			}
+		});
+		
+		System.out.println(width);
+		System.out.println(height);
+		new StandardLevel(root, width, height, widthMargin, heightMargin, RATIO);
 		
 		stage.setScene(scene);
 		stage.show();
@@ -172,15 +210,12 @@ public class ClientGUI extends Application {
 				indivValues[k] = playerData[i][k] * RATIO;
 			}
 			circles[i] = new Circle();
-			circles[i].setLayoutX(indivValues[0]);
-			circles[i].setLayoutY(indivValues[1]);
+			circles[i].setLayoutX(indivValues[0] + widthMargin);
+			circles[i].setLayoutY(indivValues[1] + heightMargin);
 			circles[i].setRadius(indivValues[2]);
 			circles[i].setStroke(COLORES[i]);
 			circles[i].setStrokeWidth(5);
 			circles[i].setFill(Color.AZURE);
-			Text name = new Text(ConnectionInfo.getPlayerNames(i));
-			name.setFont(new Font(5));
-			name.setBoundsType(TextBoundsType.VISUAL);
 			root.getChildren().add(circles[i]);
 		}
 	}
@@ -230,8 +265,8 @@ public class ClientGUI extends Application {
 			for (int k = 0; k < playerData[i].length; k++) {
 				indivValues[k] = playerData[i][k] * RATIO;
 			}
-			circles[i].setLayoutX(indivValues[0]);
-			circles[i].setLayoutY(indivValues[1]);
+			circles[i].setLayoutX(indivValues[0] + widthMargin);
+			circles[i].setLayoutY(indivValues[1] + heightMargin);
 			circles[i].setRadius(indivValues[2]);
 		}
 	}
@@ -240,7 +275,7 @@ public class ClientGUI extends Application {
 	 * @return Mouse's X-position in percentage from upper-left corner.
 	 */
 	private float getMouseX() {
-		return (float) (MouseInfo.getPointerInfo().getLocation().getX() / SCREEN_WIDTH * 100);
+		return (float) (MouseInfo.getPointerInfo().getLocation().getX() / width * 100);
 
 	}
 
@@ -248,6 +283,6 @@ public class ClientGUI extends Application {
 	 * @return Mouse's Y-position in percentage from upper-left corner.
 	 */
 	private float getMouseY() {
-		return (float) (MouseInfo.getPointerInfo().getLocation().getY() / SCREEN_HEIGHT * 100);
+		return (float) (MouseInfo.getPointerInfo().getLocation().getY() / height * 100);
 	}
 }
