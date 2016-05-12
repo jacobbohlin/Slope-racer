@@ -23,6 +23,7 @@ public class ServerManager extends TimerTask {
 		if (!s.isEmpty()) {
 			scan.close();
 			System.out.println("Lets get ready to rumble!");
+			connector.sendStartMessage();
 			startGame();
 		}
 	}

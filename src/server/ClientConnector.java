@@ -111,4 +111,25 @@ public class ClientConnector extends Thread {
 		return players;
 	}
 
+	public void sendStartMessage() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("start");
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
+			sb.append(";" + e.getValue().getName());
+		}
+		byte[] buf = sb.toString().getBytes();
+		DatagramPacket packet = new DatagramPacket(buf, buf.length);
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
+			System.out.println("Sending start message to: " + e.getValue().getAddress());
+			packet.setAddress(e.getKey());
+			packet.setPort(e.getValue().getPort());
+			try {
+				socket.send(packet);
+				System.out.println(packet.getAddress() + " " + packet.getPort());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}		
+	}
+
 }

@@ -21,6 +21,7 @@ public class Player {
 		this.port = port;
 		mouseX = 50;
 		mouseY = 50;
+		mouseClick = -1;
 		playerNbr = nextPlayerNbr++;
 	}
 	
@@ -47,6 +48,12 @@ public class Player {
 	public int getMouseY() {return mouseY;}
 	
 	/**
+	 * 
+	 * @return mouse button currently pressen, -1 for nothing, 0 for leftclick, 1 for rightclick
+	 */
+	public int getMouseClick() {return mouseClick;}
+	
+	/**
 	 * @return the UDP-Port of this player.
 	 */
 	public int getPort() {return port;}
@@ -61,6 +68,10 @@ public class Player {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+	
+	public String getName(){
+		return name;
 	}
 
 	
