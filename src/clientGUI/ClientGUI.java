@@ -64,17 +64,17 @@ public class ClientGUI extends Application {
 		final double SCREEN_HEIGHT = bounds.getHeight();
 		
 		System.out.println(SCREEN_WIDTH + " " + SCREEN_HEIGHT);
-		if(SCREEN_WIDTH / SCREEN_HEIGHT < ASPECT_RATIO) {
+		if(SCREEN_WIDTH / SCREEN_HEIGHT > ASPECT_RATIO) {
 			width = SCREEN_WIDTH;
 			height = (SCREEN_WIDTH / 16) * 9;
-		} else if (SCREEN_WIDTH / SCREEN_HEIGHT > ASPECT_RATIO) {
+		} else if (SCREEN_WIDTH / SCREEN_HEIGHT < ASPECT_RATIO) {
 			width = (SCREEN_HEIGHT / 9) * 16;
 			height = SCREEN_HEIGHT;
 		} else {
 			width = SCREEN_WIDTH;
 			height = SCREEN_HEIGHT;
 		}
-		RATIO = (float) (height / 21.6);
+		RATIO = (float) (height / 18);
 		widthMargin = (SCREEN_WIDTH - width) / 2;
 		heightMargin = (SCREEN_HEIGHT - height) / 2;
 		stage.setTitle("Slope Racer");

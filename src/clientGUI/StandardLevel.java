@@ -14,8 +14,8 @@ public class StandardLevel extends Level {
 	
 	@Override
 	protected void buildLevel() {
-		Rectangle floor = new Rectangle(widthMargin, heightMargin, width, ratio/2);
-		Rectangle roof = new Rectangle(widthMargin, height - ratio/2 + heightMargin, width, ratio/2);
+		Rectangle roof = new Rectangle(widthMargin, heightMargin, width, ratio/2);
+		Rectangle floor = new Rectangle(widthMargin, height - ratio/2 + heightMargin, width, ratio/2);
 		Rectangle leftWall = new Rectangle(widthMargin, heightMargin, ratio/2, height);
 		Rectangle rightWall = new Rectangle(width - ratio/2 + widthMargin, heightMargin, ratio/2, height);
 		Rectangle boostPad = new Rectangle(width/2 - ratio + widthMargin, height/2 - ratio + heightMargin, ratio * 2, ratio * 2);

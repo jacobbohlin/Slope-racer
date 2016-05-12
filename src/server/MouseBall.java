@@ -92,4 +92,9 @@ public class MouseBall {
 		minimizeCounter -= 1;
 	}
 	
+	public void kill(){
+		minimizeCounter = -1;
+		expandCounter = -1;
+	}
+	
 }

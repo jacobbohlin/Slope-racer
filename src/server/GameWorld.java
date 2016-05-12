@@ -117,8 +117,10 @@ public class GameWorld {
 				ratio = 3;
 			}
 			// Check if ball is out of bounds
-			if (xPos < 0 || xPos > midX * 2 || yPos < 0 || yPos > midY * 2) {
-				b.getBody().setLinearDamping(500);
+			if (xPos < 0.5 + b.getRadius()|| xPos > midX * 2 - (0.5 + b.getRadius()) || yPos < 0.5 + b.getRadius() || yPos > midY * 2 - (0.5 + b.getRadius())) {
+				b.getBody().m_type = BodyType.STATIC;
+				b.kill();
+				
 			}
 
 			// Calculate and apply force to body depending on mouse position
