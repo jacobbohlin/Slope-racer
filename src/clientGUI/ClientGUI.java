@@ -85,7 +85,7 @@ public class ClientGUI extends Application {
 		widthMargin = (SCREEN_WIDTH - width) / 2;
 		heightMargin = (SCREEN_HEIGHT - height) / 2;
 		stage.setTitle("Slope Racer");
-		stage.setFullScreen(false);
+		stage.setFullScreen(true);
 		stage.setResizable(false);
 		Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 

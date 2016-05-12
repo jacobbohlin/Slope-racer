@@ -1,20 +1,24 @@
 package server;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class ServerManager extends TimerTask {
 	private ClientConnector connector;
-	private GameWorld world;
+	private GameWorld gameWorld;
 	private ServerGUI gui;
+	private boolean firstStart;
 
-	public ServerManager() {
+	public ServerManager(ClientConnector connector) {
 		// this.gui = gui;
-		connector = new ClientConnector();
-		connector.start();
-		System.out.println("Server started");
+		this.connector = connector;
+		firstStart = true;
+		System.out.println("Server Manager created");
+		
 	}
 
 	public void startScanning() {
@@ -31,7 +35,7 @@ public class ServerManager extends TimerTask {
 	@Override
 	
 	public void run() {
-		world.step();
+		gameWorld.step();
 		try {
 			connector.send();
 		} catch (IOException e) {
@@ -41,15 +45,24 @@ public class ServerManager extends TimerTask {
 
 	}
 
-	private void startGame() {
-		world = new GameWorld(connector.getPlayers());
-		Timer timer = new Timer();
-		timer.schedule(this, 0, 1000 / 60);
+	void startGame() {
+		if(!firstStart){
+			for(Entry<InetAddress, Player> e : connector.getPlayers().entrySet()){
+				if(!e.getValue().isDead()){
+					e.getValue().setScore(e.getValue().getScore() + 1);
+				}
+				connector.sendScore();
+			}
+		} else {
+			firstStart = false;
+		}
+		gameWorld = new GameWorld(connector.getPlayers());
+	}
+	
+	public GameWorld getGameWorld(){
+		return gameWorld;
 	}
 
-	public static void main(String args[]) {
-		ServerManager man = new ServerManager();
-		man.startScanning();
-	}
+	
 
 }

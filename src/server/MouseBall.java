@@ -1,5 +1,8 @@
 package server;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -7,23 +10,31 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.World;
 
 public class MouseBall {
 	
 	private int boostCooldown;
 	private int expandCounter;
 	private int minimizeCounter;
+	private boolean onCooldown;
+	private boolean isDead;
 
 	private Body body;
 
 	private Vec2 position;
 	private float radius;
+	
+	private World world;
 
-	public MouseBall(Vec2 position) {
+	public MouseBall(Vec2 position, World world) {
 		this.position = position;
+		this.world = world;
 		expandCounter = -1;
 		minimizeCounter = -1;
 		radius = 0.5f;
+		onCooldown = false;
+		isDead = false;
 
 		// Create a body definition for this mouseBall
 		BodyDef bd = new BodyDef();
@@ -43,7 +54,7 @@ public class MouseBall {
 		fd.friction = 0.3f;
 		fd.restitution = 0.8f;
 
-		body = GameWorld.world.createBody(bd);
+		body = world.createBody(bd);
 		body.createFixture(fd);
 	}
 	
@@ -95,6 +106,30 @@ public class MouseBall {
 	public void kill(){
 		minimizeCounter = -1;
 		expandCounter = -1;
+		isDead = true;
+	}
+
+	public void cooldown(long delay) {
+		onCooldown = true;
+		Timer timer = new Timer();
+		timer.schedule(new cooldownTimerTask(), delay);
+		
 	}
 	
+	public boolean isCooldown(){
+		return onCooldown;
+	}
+	
+	public boolean isDead(){
+		return isDead;
+	}
+	
+	private class cooldownTimerTask extends TimerTask{
+
+		@Override
+		public void run() {
+			onCooldown = false;
+		}
+		
+	}
 }
