@@ -18,10 +18,12 @@ public class ClientConnector extends Thread {
 	private DatagramPacket dp;
 	private ServerManager manager;
 	private Timer timer;
+	private boolean firstStart;
 
 	public ClientConnector() {
+		firstStart = true;
 		willSendUpdate = false;
-		manager = new ServerManager(this);
+		// manager = new ServerManager(this);
 		dp = new DatagramPacket(new byte[1000], 1000);
 		try {
 			socket = new DatagramSocket(8888);
@@ -47,10 +49,7 @@ public class ClientConnector extends Thread {
 					connect(input.substring(8));
 				} else if (input.startsWith("start")) {
 					sendStartMessage();
-					System.out.println("Trying to restart game");
-					if (players.get(dp.getAddress()).getPlayerNbr() == 0) {
-						startGame();
-					}
+					startGame();
 				}
 
 			} catch (IOException e) {
@@ -62,10 +61,18 @@ public class ClientConnector extends Thread {
 	private void startGame() {
 		timer.cancel();
 		timer.purge();
-		manager = new ServerManager(this);
+		manager = new ServerManager(this, firstStart);
 		manager.startGame();
+		manager.getGameWorld().step();
+		try {
+			send();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		timer = new Timer();
-		timer.schedule(manager, 0, 1000/60);
+		timer.schedule(manager, 1000, 1000 / 60);
+		if (firstStart)
+			firstStart = false;
 	}
 
 	private void connect(String nickName) {
@@ -96,7 +103,7 @@ public class ClientConnector extends Thread {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
 		oos.writeObject(manager.getGameWorld().getPlayerData());
-//		System.out.println(manager.getGameWorld().getPlayerData()[0][0]);
+		// System.out.println(manager.getGameWorld().getPlayerData()[0][0]);
 		// System.out.println(GameWorld.getPlayerData()[0][1]);
 		byte[] buf = baos.toByteArray();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -145,40 +152,40 @@ public class ClientConnector extends Thread {
 		byte[] buf = sb.toString().getBytes();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
-			System.out.println("Sending start message to: " + e.getValue().getAddress());
 			packet.setAddress(e.getKey());
 			packet.setPort(e.getValue().getPort());
 			try {
 				socket.send(packet);
-				System.out.println(packet.getAddress() + " " + packet.getPort());
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
 	}
-	
-	public void sendScore(){
+
+	public void sendScore() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("score");
 		int[] scores = new int[players.size()];
-		for(Entry<InetAddress, Player> e: players.entrySet()){
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			scores[e.getValue().getPlayerNbr()] = e.getValue().getScore();
+			System.out.println(e.getValue().getScore());
 		}
-		for(int i : scores){
+		for (int i : scores) {
 			sb.append(";" + i);
 		}
 		DatagramPacket dp = new DatagramPacket(sb.toString().getBytes(), sb.toString().getBytes().length);
-		for(Entry<InetAddress, Player> e: players.entrySet()){
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			dp.setAddress(e.getValue().getAddress());
 			dp.setPort(e.getValue().getPort());
 			try {
+				System.out.println("Sending score");
 				socket.send(dp);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
 	}
-	
+
 	public static void main(String args[]) {
 		ClientConnector connector = new ClientConnector();
 		connector.start();
