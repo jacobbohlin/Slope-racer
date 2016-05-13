@@ -18,7 +18,7 @@ public class ConnectDialog extends Dialog<Void> {
 	 * Constructs a dialog with two Text input fields for nickname and IP-address of the server.
 	 */
 	public ConnectDialog() {
-		setTitle("Pilko - Nudge ball mania!");
+		setTitle("PILCOMANIA");
 		setResizable(false);
 		setHeaderText(null);
 		ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);

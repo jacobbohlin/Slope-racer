@@ -18,31 +18,33 @@ public class WaitForPlayerDialog extends Dialog<Void> {
 	private final String message = "CONTROLS: \n \n"
 			+ "Steer by moving the mouse from the center of the screen, if the mouse is located to the right of the center\n"
 			+ " your ball will move to the right regardless of where it is located. \n \n"
-			+ "Press \"Q\" to MAXIMIZE and \"E\" to MINIMIZE. \n \n"
+			+ "Press \"Q\" or LEFT mouseclick to MAXIMIZE and \"E\" or RIGHT mouseclick to MINIMIZE. They share a cooldown. \n \n"
 			+ "Press \"TAB\" to show stats. \n \n"
 			+ "Press the \"Start\" button or \"Spacebar\" to start the game or in-game to restart/start new round.";
 	
 	public WaitForPlayerDialog() {
-		setTitle("Pilko - Nudge ball mania!"); 
+		setTitle("PILCOMANIA"); 
 		setResizable(false);
 		setHeaderText(null);
 		getDialogPane().getScene().getWindow().setOnCloseRequest(event -> event.consume());
-		ButtonType startButtonType = new ButtonType("Start", ButtonData.OK_DONE);
-		getDialogPane().getButtonTypes().addAll(startButtonType, ButtonType.CLOSE);
-		
-		Button startButton = (Button) getDialogPane().lookupButton(startButtonType);
-		startButton.setOnAction((Event) -> {
-			new Thread(new StartTask()).start();
-		});
+		if(ConnectionInfo.getIp().getHostName().equals("localhost")) {
+			ButtonType startButtonType = new ButtonType("Start", ButtonData.OK_DONE);
+			getDialogPane().getButtonTypes().addAll(startButtonType, ButtonType.CLOSE);
+			Button startButton = (Button) getDialogPane().lookupButton(startButtonType);
+			startButton.setOnAction((Event) -> {
+				new Thread(new StartTask()).start();
+			});
+					
+		} else {
+			getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
+		}
 		
 		Button closeButton = (Button) getDialogPane().lookupButton(ButtonType.CLOSE);
 		closeButton.setOnAction((Event) -> {
 			System.exit(0);
 		});
 		
-		if(ConnectionInfo.getIp().getHostName() == "localhost") {
-			startButton.setVisible(false);
-		}
+		
 		startMessage.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
 		startMessage.setMinWidth(getWidth());
 		final Label instructions = new Label(message);

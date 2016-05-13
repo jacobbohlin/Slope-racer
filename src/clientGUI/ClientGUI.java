@@ -45,6 +45,7 @@ public class ClientGUI extends Application {
 	private double width, height, widthMargin, heightMargin;
 	private float RATIO;
 	private boolean firstDraw = true;
+	private boolean secondDraw = true;
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.WHEAT, Color.BLACK, Color.BLUEVIOLET };
 	private final String[] SCORE_COLORES = {"blue", "red", "green", "wheat", "black", "blueviolet"};
 	private Group root;
@@ -64,18 +65,11 @@ public class ClientGUI extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		root = new Group();
-//		Screen screen = Screen.getPrimary();
-//		Rectangle2D bounds = screen.getVisualBounds();
-//
-//		stage.setX(bounds.getMinX());
-//		stage.setY(bounds.getMinY());
-//		final double SCREEN_WIDTH = bounds.getWidth();
-//		final double SCREEN_HEIGHT = bounds.getHeight();
+		
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		final double SCREEN_WIDTH = screen.getWidth();
 		final double SCREEN_HEIGHT = screen.getHeight();
 		
-		System.out.println(SCREEN_WIDTH + " " + SCREEN_HEIGHT);
 		if(SCREEN_WIDTH / SCREEN_HEIGHT > ASPECT_RATIO) {
 			width = SCREEN_WIDTH;
 			height = (SCREEN_WIDTH / 16) * 9;
@@ -89,7 +83,7 @@ public class ClientGUI extends Application {
 		RATIO = (float) (height / 18);
 		widthMargin = (SCREEN_WIDTH - width) / 2;
 		heightMargin = (SCREEN_HEIGHT - height) / 2;
-		stage.setTitle("Slope Racer");
+		stage.setTitle("PILCOMANIA");
 		stage.setFullScreen(true);
 		stage.setResizable(false);
 		Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -128,19 +122,15 @@ public class ClientGUI extends Application {
 		KeyFrame frame = new KeyFrame(duration, ae, null, null);
 		timeline.getKeyFrames().add(frame);
 		
-//		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-//
-//            if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) {
-//            } else if( e.isPrimaryButtonDown()) {
-//                ability = 0;
-//            } else if( e.isSecondaryButtonDown()) {
-//                ability = 1;
-//            }
-//        });
-		
-		System.out.println(width);
-		System.out.println(height);
-		new StandardLevel(root, width, height, widthMargin, heightMargin, RATIO);
+		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+
+            if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) {
+            } else if( e.isPrimaryButtonDown()) {
+                ability = 0;
+            } else if( e.isSecondaryButtonDown()) {
+                ability = 1;
+            }
+        });
 		
 		createScoreboard();
 		root.getChildren().add(scoreboard);
@@ -151,7 +141,9 @@ public class ClientGUI extends Application {
 			} else if(ke.getCode() == KeyCode.E) {
 				ability = 1;
 			} else if(ke.getCode() == KeyCode.SPACE) {
-				new Thread(new StartTask()).start();
+				if(ConnectionInfo.getIp().getHostName().equals("localhost")) {
+					new Thread(new StartTask()).start();				
+				}
 			} else if(ke.getCode() == KeyCode.TAB) {
 				if(!ConnectionInfo.isFirstPacketReceived()) return;
 				String[] playerNames = ConnectionInfo.getPlayerNames();
@@ -161,23 +153,18 @@ public class ClientGUI extends Application {
 					names[i+1].setText(playerNames[i] + ": ");
 					scores[i+1].setText(playerScores[i]);
 				}
-//				names.setVisible(true);
-//				scores.setVisible(true);
 				scoreboard.setVisible(true);
 			} 
 		});
 		
 		scene.setOnKeyReleased(ke ->{
 			if(ke.getCode() == KeyCode.TAB) {
-//				names.setVisible(false);
-//				scores.setVisible(false);
 				scoreboard.setVisible(false);
 			}
 		});
 		
 		stage.setScene(scene);
 		stage.show();
-		System.out.println("Showing GUI");
 		connectDialog = new ConnectDialog();
 		setup();
 	}
@@ -199,12 +186,15 @@ public class ClientGUI extends Application {
 			scores[i] = new Label();
 			names[i].setTextFill(COLORES[i - 1]);
 			scores[i].setTextFill(COLORES[i - 1]);
+			names[i].setFont(Font.font("Verdana", 20));
+			scores[i].setFont(Font.font("Verdana", 20));
 			layout.add(names[i], 0, i);
 			layout.add(scores[i], 1, i);
+			
 		}
 		scoreboard.getChildren().add(layout);
-		scoreboard.setVgrow(layout, Priority.ALWAYS);
-		scoreboard.setPrefWidth(200);
+		VBox.setVgrow(layout, Priority.ALWAYS);
+		scoreboard.setPrefWidth(350);
 		scoreboard.setLayoutX(80 + widthMargin);
 		scoreboard.setLayoutY(80 + heightMargin);
 		scoreboard.setVisible(false);
@@ -235,7 +225,6 @@ public class ClientGUI extends Application {
 			}
 		}
 		for (int i = 0; i < 3; i++) {
-			System.out.println(i);
 			new Thread(new ConnectTask()).start();
 			try {
 				Thread.sleep(1010);
@@ -254,6 +243,7 @@ public class ClientGUI extends Application {
 		waitDialog.show();
 		ReceiveService rs = new ReceiveService();
 		rs.start();
+		new StandardLevel(root, width, height, widthMargin, heightMargin, RATIO);
 		timeline.playFromStart();
 	}
 
@@ -279,40 +269,11 @@ public class ClientGUI extends Application {
 			circles[i].setStrokeWidth(5);
 			circles[i].setFill(Color.AZURE);
 			root.getChildren().add(circles[i]);
+			if(i != ConnectionInfo.getId()) {
+				circles[i].setVisible(false);
+			}
 		}
 	}
-	
-
-	// public void draw(GraphicsContext gc) {
-	// float[][] playerData = ConnectionInfo.getPlayerData();
-	// skiers = new Skier[playerData.length];
-	// float[] indivPos = new float[playerData[0].length];
-	// for (int i = 0; i < playerData.length; i++) {
-	// for (int k = 0; k <playerData[i].length; k++) {
-	// indivPos[k] = playerData[i][k] * RATIO;
-	// }
-	// int indPos = 0;
-	// double dx = 0;
-	// double dy = 0;
-	// skiers[i] = new Skier();
-	// BodyPart[] bodyParts = skiers[i].getBodyParts();
-	// for(int l = 0; l < bodyParts.length; l++) {
-	// switch(l) {
-	// case 0: dx = 0.125 * RATIO; dy = 0.66 * RATIO; break;
-	// case 3: dx = 0.8 * RATIO; dy = 0.25 * RATIO; break;
-	// default: dx = bodyParts[l].getWidth()/2; dy = bodyParts[l].getHeight()/2;
-	// }
-	// bodyParts[l].setxPos(indivPos[indPos++] - dx);
-	// bodyParts[l].setyPos(indivPos[indPos++] - dy);
-	// bodyParts[l].setAngle(indivPos[indPos++]);
-	// gc.rotate(bodyParts[l].getAngle());
-	// gc.setFill(COLORES[l]);
-	// gc.fillRect(bodyParts[l].getxPos(), bodyParts[l].getyPos(),
-	// bodyParts[l].getWidth(), bodyParts[l].getHeight());
-	// gc.rotate(-bodyParts[l].getAngle());
-	// }
-	// }
-	// }
 
 	/**
 	 * Updates position of all players.
@@ -321,6 +282,12 @@ public class ClientGUI extends Application {
 	 *            Positions of all players.
 	 */
 	public void update() {
+		if(secondDraw) {
+			for(Circle c: circles) {
+				c.setVisible(true);
+			}
+			secondDraw = false; 
+		}
 		float[][] playerData = ConnectionInfo.getPlayerData();
 		float[] indivValues = new float[playerData[0].length];
 		for (int i = 0; i < playerData.length; i++) {

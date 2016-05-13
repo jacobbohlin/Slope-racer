@@ -1,9 +1,11 @@
 
 Skicka mousePosition frÃ¥n client i korrekt format.
 
-Mayhaps fixa så att Service.reset fungerar för framförallt ConnectService, annars kan den bara försöka connecta 1 gång. Samt snyggare
-lösning på SendService.
+Mayhaps fixa sï¿½ att Service.reset fungerar fï¿½r framfï¿½rallt ConnectService, annars kan den bara fï¿½rsï¿½ka connecta 1 gï¿½ng. Samt snyggare
+lï¿½sning pï¿½ SendService.
 
-ConnectDialog ska öppnas igen om den failar att connecta.
+ConnectDialog ska ï¿½ppnas igen om den failar att connecta.
+
+Man Ã¤r alltid samma fÃ¤rg pÃ¥ sin egen skÃ¤rm?
 
 

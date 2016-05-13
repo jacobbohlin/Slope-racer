@@ -16,7 +16,6 @@ public class ConnectTask extends Task<Void> {
 		ConnectionInfo.getSocket().send(connect);
 		DatagramPacket response = new DatagramPacket(new byte[1000], 1000);
 		ConnectionInfo.getSocket().setSoTimeout(1000);
-		System.out.println("Waiting for response....");
 		try {
 			ConnectionInfo.getSocket().receive(response);
 		} catch (SocketTimeoutException e) {
@@ -27,7 +26,6 @@ public class ConnectTask extends Task<Void> {
 			byte[] data = response.getData();
 			String s = new String(data, 0, data.length);
 			ConnectionInfo.setId(Integer.parseInt(s.substring(4, 5)));
-			System.out.println("Connected " + s);
 		}
 		return null;
 	}

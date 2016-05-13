@@ -36,7 +36,6 @@ public class ReceiveService extends Service<Void> {
 //							}
 //						}
 					} catch (Exception e) {
-						System.out.println("Start packet received.");
 						byte[] data = dp.getData();
 						String message = new String(data, 0, data.length);
 						if (message.startsWith("score;")) {
@@ -44,15 +43,13 @@ public class ReceiveService extends Service<Void> {
 							ConnectionInfo.setScore(score);
 						} else {
 							String subMessage = (new String(data, 0, data.length)).substring(6);
-							System.out.println(subMessage);
 							if (subMessage.contains(";")) {
 								ConnectionInfo.setPlayerNames(subMessage.split(";"));
-							} else {
+							} else  {
 								String[] names = new String[1];
 								names[0] = subMessage;
 								ConnectionInfo.setPlayerNames(names);
 							}
-							System.out.println(ConnectionInfo.getPlayerNames()[0]);
 						}
 					}
 				}
