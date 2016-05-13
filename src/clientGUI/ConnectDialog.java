@@ -18,7 +18,7 @@ public class ConnectDialog extends Dialog<Void> {
 	 * Constructs a dialog with two Text input fields for nickname and IP-address of the server.
 	 */
 	public ConnectDialog() {
-		setTitle("Slope Racer");
+		setTitle("Pilko - Nudge ball mania!");
 		setResizable(false);
 		setHeaderText(null);
 		ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
@@ -34,7 +34,7 @@ public class ConnectDialog extends Dialog<Void> {
 		nickname.setText("JAMES");// TA BORT
 		address = new TextField();
 		// address.setPromptText("127.0.0.1");
-		address.setText("192.168.1.34");// TA BORT
+		address.setText("localhost");// TA BORT
 
 		grid.add(new Label("Nickname:"), 0, 0);
 		grid.add(nickname, 1, 0);

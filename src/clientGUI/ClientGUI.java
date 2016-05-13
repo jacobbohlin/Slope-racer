@@ -1,6 +1,8 @@
 package clientGUI;
 
+import java.awt.Dimension;
 import java.awt.MouseInfo;
+import java.awt.Toolkit;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -62,13 +64,16 @@ public class ClientGUI extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		root = new Group();
-		Screen screen = Screen.getPrimary();
-		Rectangle2D bounds = screen.getVisualBounds();
-
-		stage.setX(bounds.getMinX());
-		stage.setY(bounds.getMinY());
-		final double SCREEN_WIDTH = bounds.getWidth();
-		final double SCREEN_HEIGHT = bounds.getHeight();
+//		Screen screen = Screen.getPrimary();
+//		Rectangle2D bounds = screen.getVisualBounds();
+//
+//		stage.setX(bounds.getMinX());
+//		stage.setY(bounds.getMinY());
+//		final double SCREEN_WIDTH = bounds.getWidth();
+//		final double SCREEN_HEIGHT = bounds.getHeight();
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		final double SCREEN_WIDTH = screen.getWidth();
+		final double SCREEN_HEIGHT = screen.getHeight();
 		
 		System.out.println(SCREEN_WIDTH + " " + SCREEN_HEIGHT);
 		if(SCREEN_WIDTH / SCREEN_HEIGHT > ASPECT_RATIO) {
@@ -85,7 +90,7 @@ public class ClientGUI extends Application {
 		widthMargin = (SCREEN_WIDTH - width) / 2;
 		heightMargin = (SCREEN_HEIGHT - height) / 2;
 		stage.setTitle("Slope Racer");
-		stage.setFullScreen(false);
+		stage.setFullScreen(true);
 		stage.setResizable(false);
 		Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -95,7 +100,7 @@ public class ClientGUI extends Application {
 		Duration duration = Duration.seconds(FPS); // Set duration for
 													// frame, 60fps.
 
-		// Create an ActionEvent, on trigger it executes a world time step.
+		// Create an ActionEvent, on trigger it executes a world time step. 
 		EventHandler<ActionEvent> ae = new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent t) {
@@ -123,15 +128,15 @@ public class ClientGUI extends Application {
 		KeyFrame frame = new KeyFrame(duration, ae, null, null);
 		timeline.getKeyFrames().add(frame);
 		
-		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-
-            if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) {
-            } else if( e.isPrimaryButtonDown()) {
-                ability = 0;
-            } else if( e.isSecondaryButtonDown()) {
-                ability = 1;
-            }
-        });
+//		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+//
+//            if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) {
+//            } else if( e.isPrimaryButtonDown()) {
+//                ability = 0;
+//            } else if( e.isSecondaryButtonDown()) {
+//                ability = 1;
+//            }
+//        });
 		
 		System.out.println(width);
 		System.out.println(height);
@@ -141,7 +146,11 @@ public class ClientGUI extends Application {
 		root.getChildren().add(scoreboard);
 		
 		scene.setOnKeyPressed(ke ->{
-			if(ke.getCode() == KeyCode.SPACE) {
+			if(ke.getCode() == KeyCode.Q) {
+				ability = 0;
+			} else if(ke.getCode() == KeyCode.E) {
+				ability = 1;
+			} else if(ke.getCode() == KeyCode.SPACE) {
 				new Thread(new StartTask()).start();
 			} else if(ke.getCode() == KeyCode.TAB) {
 				if(!ConnectionInfo.isFirstPacketReceived()) return;
@@ -170,7 +179,6 @@ public class ClientGUI extends Application {
 		stage.show();
 		System.out.println("Showing GUI");
 		connectDialog = new ConnectDialog();
-		waitDialog = new WaitForPlayerDialog();
 		setup();
 	}
 	
@@ -182,8 +190,8 @@ public class ClientGUI extends Application {
 		layout.setPadding(new Insets(5, 20, 5, 20));
 		names[0] = new Label("Name");
 		scores[0] = new Label("Score");
-		names[0].setFont(Font.font("Verdana", FontWeight.BOLD, 20));
-		scores[0].setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+		names[0].setFont(Font.font("Verdana", FontWeight.BOLD, 25));
+		scores[0].setFont(Font.font("Verdana", FontWeight.BOLD, 25));
 		layout.add(names[0], 0, 0);
 		layout.add(scores[0], 2, 0);
 		for(int i = 1; i < 7; i++) {
@@ -242,6 +250,7 @@ public class ClientGUI extends Application {
 				connectDialog.timeOut();
 			}
 		}
+		waitDialog = new WaitForPlayerDialog();
 		waitDialog.show();
 		ReceiveService rs = new ReceiveService();
 		rs.start();
