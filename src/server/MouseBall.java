@@ -52,7 +52,7 @@ public class MouseBall {
 		fd.shape = cs;
 		fd.density = 0.6f;
 		fd.friction = 0.3f;
-		fd.restitution = 0.8f;
+		fd.restitution = 1.3f;
 
 		body = world.createBody(bd);
 		body.createFixture(fd);

@@ -13,12 +13,12 @@ public class ServerManager extends TimerTask {
 	private ServerGUI gui;
 	private boolean firstStart;
 
-	public ServerManager(ClientConnector connector) {
+	public ServerManager(ClientConnector connector, boolean firstStart) {
 		// this.gui = gui;
 		this.connector = connector;
-		firstStart = true;
+		this.firstStart = firstStart;
 		System.out.println("Server Manager created");
-		
+
 	}
 
 	public void startScanning() {
@@ -33,7 +33,7 @@ public class ServerManager extends TimerTask {
 	}
 
 	@Override
-	
+
 	public void run() {
 		gameWorld.step();
 		try {
@@ -46,23 +46,20 @@ public class ServerManager extends TimerTask {
 	}
 
 	void startGame() {
-		if(!firstStart){
-			for(Entry<InetAddress, Player> e : connector.getPlayers().entrySet()){
-				if(!e.getValue().isDead()){
+		System.out.println(firstStart);
+		if (!firstStart) {
+			for (Entry<InetAddress, Player> e : connector.getPlayers().entrySet()) {
+				if (!e.getValue().isDead()) {
 					e.getValue().setScore(e.getValue().getScore() + 1);
 				}
 				connector.sendScore();
 			}
-		} else {
-			firstStart = false;
 		}
 		gameWorld = new GameWorld(connector.getPlayers());
 	}
-	
-	public GameWorld getGameWorld(){
+
+	public GameWorld getGameWorld() {
 		return gameWorld;
 	}
-
-	
 
 }

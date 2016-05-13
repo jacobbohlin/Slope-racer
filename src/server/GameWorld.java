@@ -61,24 +61,24 @@ public class GameWorld {
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			Player p = e.getValue();
 			int nbr = p.getPlayerNbr();
-			Vec2 position = new Vec2(16, 9);
-			switch(nbr){
-			case 0: 
-				position = new Vec2(3, 3);
-				break;
-			case 1:
-				position = new Vec2(29, 3);
-				break;
-			case 2:
-				position = new Vec2(29, 15);
-				break;
-			case 3: 
-				position = new Vec2(3, 15);
-				break;
-			default:
-				break;
-				
-			}
+			Vec2 position = new Vec2((float)(3 + Math.random()*26),(float)(3 + Math.random()*12));
+//			switch(nbr){
+//			case 0: 
+//				position = new Vec2(3, 3);
+//				break;
+//			case 1:
+//				position = new Vec2(29, 3);
+//				break;
+//			case 2:
+//				position = new Vec2(29, 15);
+//				break;
+//			case 3: 
+//				position = new Vec2(3, 15);
+//				break;
+//			default:
+//				break;
+//				
+//			}
 			
 			InetAddress addr = p.getAddress();
 			mouseBalls.put(addr, new MouseBall(position, world));
@@ -100,7 +100,6 @@ public class GameWorld {
 			MouseBall b = mouseBalls.get(e.getValue().getAddress());
 			if (!b.isDead()) {
 				int ratio = 10;
-				System.out.println(b.getPositionX());
 				playerData[p.getPlayerNbr()][0] = b.getPositionX();
 				playerData[p.getPlayerNbr()][1] = b.getPositionY();
 				playerData[p.getPlayerNbr()][2] = b.getRadius();
