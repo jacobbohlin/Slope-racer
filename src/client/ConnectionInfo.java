@@ -14,10 +14,6 @@ public class ConnectionInfo {
 	private static String[] playerNames;
 	private static String[] score;
 	private final static String[] EMPTY_SCORES = {"0", "0", "0", "0", "0", "0", "0"};
-
-	
-	
-
 	
 
 	public static InetAddress getIp() { 

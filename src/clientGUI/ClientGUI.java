@@ -12,6 +12,7 @@ import client.ConnectTask;
 import client.ConnectionInfo;
 import client.ReceiveService;
 import client.SendTask;
+import client.SoundEffectHandler;
 import client.StartTask;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -57,6 +58,7 @@ public class ClientGUI extends Application {
 	private int ability = -1;
 	private VBox scoreboard;
 	private Label[] names, scores;
+	
 
 	public static void main(String[] args) {
 		launch(args);
@@ -66,6 +68,7 @@ public class ClientGUI extends Application {
 	public void start(Stage stage) throws Exception {
 		root = new Group();
 		
+		SoundEffectHandler seh = new SoundEffectHandler();
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		final double SCREEN_WIDTH = screen.getWidth();
 		final double SCREEN_HEIGHT = screen.getHeight();

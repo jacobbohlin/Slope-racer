@@ -1,23 +1,22 @@
 package server;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Timer;
-import java.util.TimerTask;
+import java.util.TreeMap;
 
-import org.jbox2d.callbacks.ContactImpulse;
-import org.jbox2d.callbacks.ContactListener;
-import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
+
+import javafx.scene.media.AudioClip;
 
 public class GameWorld {
 
@@ -32,8 +31,9 @@ public class GameWorld {
 	private Body boostPadBody;
 	private Timer cooldownTimer;
 	private boolean cooldown;
+	private ClientConnector connector;
 
-	public GameWorld(HashMap<InetAddress, Player> players) {
+	public GameWorld(HashMap<InetAddress, Player> players, ClientConnector connector) {
 		this.players = players;
 		cooldownTimer = new Timer();
 
@@ -44,10 +44,33 @@ public class GameWorld {
 		gravity = new Vec2(0f, 0f);
 		allowSleepingObjects = true;
 		world = new World(gravity);
+		world.setContactListener(new ContactListenerClass(connector)); //Dedicated listener for audio to play on collision
 		world.setAllowSleep(allowSleepingObjects);
+		createTestWorld();
 		createMouseBalls();
-
+		this.connector = connector;
 		// createSkiers();
+		
+		
+	}
+	
+	private void createTestWorld() {
+		BodyDef bdef = new BodyDef();
+		bdef.fixedRotation = true;
+		bdef.type = BodyType.DYNAMIC;
+		bdef.position.set(new Vec2(3f, 3f));
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(3, 3);
+		
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = shape;
+		fdef.density = 1.0f;
+		
+		Body body = world.createBody(bdef);
+		body.createFixture(fdef);
+		System.out.println("Created test polygon");
+//		body.createFixture(fdef).setUserData(this);
 	}
 	
 	public World getWorld(){
@@ -108,6 +131,7 @@ public class GameWorld {
 				if (25 < b.getExpandCounter()) {
 					b.setRadius(b.getRadius() + 0.04f);
 					b.decrementExpandCounter();
+					connector.sendSoundEffectCue("expball");
 				} else if (0 < b.getExpandCounter()) {
 					b.setRadius(b.getRadius() - 0.04f);
 					b.decrementExpandCounter();
@@ -120,6 +144,7 @@ public class GameWorld {
 				if (75 < b.getMinimizeCounter()) {
 					b.setRadius(b.getRadius() - 0.016f);
 					b.decrementMinimizeCounter();
+					connector.sendSoundEffectCue("conball");
 				} else if (25 < b.getMinimizeCounter()) {
 					b.decrementMinimizeCounter();
 				} else if (0 < b.getMinimizeCounter()) {
@@ -139,13 +164,15 @@ public class GameWorld {
 				boolean yBoost = yPos > (midY - 1) && yPos < (midY + 1);
 				if (xBoost && yBoost) {
 					ratio = 2;
+					connector.sendSoundEffectCue("boostpd");
+
 				}
 				// Check if ball is out of bounds
 				if (xPos < 0.5 + b.getRadius() || xPos > midX * 2 - (0.5 + b.getRadius()) || yPos < 0.5 + b.getRadius()
 						|| yPos > midY * 2 - (0.5 + b.getRadius())) {
 					b.getBody().m_type = BodyType.STATIC;
 					b.kill();
-
+					connector.sendSoundEffectCue("bwdeath");
 				}
 
 				// Calculate and apply force to body depending on mouse position

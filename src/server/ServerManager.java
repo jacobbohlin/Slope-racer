@@ -10,7 +10,7 @@ import java.util.TimerTask;
 public class ServerManager extends TimerTask {
 	private ClientConnector connector;
 	private GameWorld gameWorld;
-	private ServerGUI gui;
+//	private ServerGUI gui;
 	private boolean firstStart;
 
 	public ServerManager(ClientConnector connector, boolean firstStart) {
@@ -55,7 +55,7 @@ public class ServerManager extends TimerTask {
 				connector.sendScore();
 			}
 		}
-		gameWorld = new GameWorld(connector.getPlayers());
+		gameWorld = new GameWorld(connector.getPlayers(), connector);
 	}
 
 	public GameWorld getGameWorld() {

@@ -134,6 +134,23 @@ public class ClientConnector extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	public void sendSoundEffectCue(String soundEffect) {
+		String message = "playsound;" + soundEffect;
+		byte[] buf = message.getBytes();
+		DatagramPacket soundpacket = new DatagramPacket(buf, buf.length);
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
+			soundpacket.setAddress(e.getKey());
+			soundpacket.setPort(e.getValue().getPort());
+			try {
+				socket.send(soundpacket);
+//				System.out.println("Sent sound to: " + soundpacket.getAddress() + " " + soundpacket.getPort() + " Message: "
+//						+ new String(soundpacket.getData(), 0, soundpacket.getLength()));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
 
 	/**
 	 * 

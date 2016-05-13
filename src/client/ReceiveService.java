@@ -41,6 +41,11 @@ public class ReceiveService extends Service<Void> {
 						if (message.startsWith("score;")) {
 							String[] score = message.substring(6).split(";");
 							ConnectionInfo.setScore(score);
+						} else if(message.startsWith("playsound;")) {
+//							System.out.println(message);
+							String soundEffect = message.substring(10, 17);
+//							System.out.println(soundEffect);
+							SoundEffectHandler.playSound(soundEffect);
 						} else {
 							String subMessage = (new String(data, 0, data.length)).substring(6);
 							if (subMessage.contains(";")) {
