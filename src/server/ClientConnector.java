@@ -9,15 +9,19 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Timer;
 
 public class ClientConnector extends Thread {
 	private HashMap<InetAddress, Player> players = new HashMap<InetAddress, Player>();
 	private DatagramSocket socket;
 	public boolean willSendUpdate;
 	private DatagramPacket dp;
+	private ServerManager manager;
+	private Timer timer;
 
 	public ClientConnector() {
 		willSendUpdate = false;
+		manager = new ServerManager(this);
 		dp = new DatagramPacket(new byte[1000], 1000);
 		try {
 			socket = new DatagramSocket(8888);
@@ -25,6 +29,7 @@ public class ClientConnector extends Thread {
 			System.out.println("Could not create socket");
 			e.printStackTrace();
 		}
+		timer = new Timer();
 
 	}
 
@@ -40,12 +45,27 @@ public class ClientConnector extends Thread {
 				} else if (input.startsWith("connect;")) {
 					System.out.println("A client is trying to connect.");
 					connect(input.substring(8));
+				} else if (input.startsWith("start")) {
+					sendStartMessage();
+					System.out.println("Trying to restart game");
+					if (players.get(dp.getAddress()).getPlayerNbr() == 0) {
+						startGame();
+					}
 				}
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void startGame() {
+		timer.cancel();
+		timer.purge();
+		manager = new ServerManager(this);
+		manager.startGame();
+		timer = new Timer();
+		timer.schedule(manager, 0, 1000/60);
 	}
 
 	private void connect(String nickName) {
@@ -62,10 +82,10 @@ public class ClientConnector extends Thread {
 
 	private void update(String input) throws IOException {
 
-		if(!input.isEmpty()){
+		if (!input.isEmpty()) {
 			String[] inputArray = input.split(";");
 			int mouseX = (int) Double.parseDouble(inputArray[0]);
-//			System.out.println(inputArray[0]);
+			// System.out.println(inputArray[0]);
 			int mouseY = (int) Double.parseDouble(inputArray[1]);
 			int mouseClick = (int) Double.parseDouble(inputArray[2]);
 			players.get(dp.getAddress()).setMousePos(mouseX, mouseY, mouseClick);
@@ -75,16 +95,19 @@ public class ClientConnector extends Thread {
 	public void send() throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(GameWorld.getPlayerData());
-//		System.out.println(GameWorld.getPlayerData()[0][0]);
-//		System.out.println(GameWorld.getPlayerData()[0][1]);
+		oos.writeObject(manager.getGameWorld().getPlayerData());
+//		System.out.println(manager.getGameWorld().getPlayerData()[0][0]);
+		// System.out.println(GameWorld.getPlayerData()[0][1]);
 		byte[] buf = baos.toByteArray();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			packet.setAddress(e.getKey());
 			packet.setPort(e.getValue().getPort());
-//			System.out.println("sending update to: " + packet.getAddress() + " " + packet.getPort() + " X: " 
-//			+ GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][0] + " Y: " + GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][1]);
+			// System.out.println("sending update to: " + packet.getAddress() +
+			// " " + packet.getPort() + " X: "
+			// + GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][0] + "
+			// Y: " +
+			// GameWorld.getPlayerData()[e.getValue().getPlayerNbr()][1]);
 			socket.send(packet);
 		}
 	}
@@ -95,7 +118,8 @@ public class ClientConnector extends Thread {
 		dp = new DatagramPacket(buf, buf.length);
 		dp.setAddress(p.getAddress());
 		dp.setPort(p.getPort());
-		System.out.println("Sending ack to: " + dp.getAddress() + " " + dp.getPort() + " Message: " + new String(dp.getData(), 0, dp.getLength()));
+		System.out.println("Sending ack to: " + dp.getAddress() + " " + dp.getPort() + " Message: "
+				+ new String(dp.getData(), 0, dp.getLength()));
 		try {
 			socket.send(dp);
 		} catch (IOException e) {
@@ -103,6 +127,7 @@ public class ClientConnector extends Thread {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * 
 	 * @return HashMap containing all the Players currently connected
@@ -129,7 +154,34 @@ public class ClientConnector extends Thread {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		}		
+		}
+	}
+	
+	public void sendScore(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("score");
+		int[] scores = new int[players.size()];
+		for(Entry<InetAddress, Player> e: players.entrySet()){
+			scores[e.getValue().getPlayerNbr()] = e.getValue().getScore();
+		}
+		for(int i : scores){
+			sb.append(";" + i);
+		}
+		DatagramPacket dp = new DatagramPacket(sb.toString().getBytes(), sb.toString().getBytes().length);
+		for(Entry<InetAddress, Player> e: players.entrySet()){
+			dp.setAddress(e.getValue().getAddress());
+			dp.setPort(e.getValue().getPort());
+			try {
+				socket.send(dp);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	public static void main(String args[]) {
+		ClientConnector connector = new ClientConnector();
+		connector.start();
 	}
 
 }

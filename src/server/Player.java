@@ -9,6 +9,8 @@ public class Player {
 	private int mouseX, mouseY, mouseClick;
 	private final int playerNbr;
 	private static int nextPlayerNbr = 0;
+	private boolean isDead;
+	private int score;
 	
 	/**
 	 * Constructs a player.
@@ -23,6 +25,28 @@ public class Player {
 		mouseY = 50;
 		mouseClick = -1;
 		playerNbr = nextPlayerNbr++;
+		isDead = false;
+		score = 0;
+	}
+	
+	public void setScore(int score){
+		this.score = score;
+	}
+	
+	public int getScore(){
+		return score;
+	}
+	/**
+	 * 
+	 * @return true if player is dead
+	 */
+	public boolean isDead(){return isDead;}
+	
+	public void kill(){
+		isDead = true;
+	}
+	public void revive(){
+		isDead = false;
 	}
 	
 	/**

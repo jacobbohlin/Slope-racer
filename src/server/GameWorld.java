@@ -22,7 +22,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 public class GameWorld {
 
 	private static float[][] playerData;
-	protected static World world;
+	private World world;
 	private Vec2 gravity;
 	private boolean allowSleepingObjects;
 	private static HashMap<InetAddress, Player> players;
@@ -49,6 +49,10 @@ public class GameWorld {
 
 		// createSkiers();
 	}
+	
+	public World getWorld(){
+		return world;
+	}
 
 	/**
 	 * Creates a mouseBall for each player to play with
@@ -56,9 +60,28 @@ public class GameWorld {
 	private void createMouseBalls() {
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			Player p = e.getValue();
-			Vec2 position = new Vec2(3, 3);
+			int nbr = p.getPlayerNbr();
+			Vec2 position = new Vec2(16, 9);
+			switch(nbr){
+			case 0: 
+				position = new Vec2(3, 3);
+				break;
+			case 1:
+				position = new Vec2(29, 3);
+				break;
+			case 2:
+				position = new Vec2(29, 15);
+				break;
+			case 3: 
+				position = new Vec2(3, 15);
+				break;
+			default:
+				break;
+				
+			}
+			
 			InetAddress addr = p.getAddress();
-			mouseBalls.put(addr, new MouseBall(position));
+			mouseBalls.put(addr, new MouseBall(position, world));
 		}
 	}
 	/**
@@ -75,72 +98,72 @@ public class GameWorld {
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			Player p = e.getValue();
 			MouseBall b = mouseBalls.get(e.getValue().getAddress());
-			int ratio = 20;
-			playerData[p.getPlayerNbr()][0] = b.getPositionX();
-			playerData[p.getPlayerNbr()][1] = b.getPositionY();
-			playerData[p.getPlayerNbr()][2] = b.getRadius();
+			if (!b.isDead()) {
+				int ratio = 10;
+				System.out.println(b.getPositionX());
+				playerData[p.getPlayerNbr()][0] = b.getPositionX();
+				playerData[p.getPlayerNbr()][1] = b.getPositionY();
+				playerData[p.getPlayerNbr()][2] = b.getRadius();
 
-			// Check if ball is expanding
-			if (25 < b.getExpandCounter()) {
-				b.setRadius(b.getRadius() + 0.04f);
-				b.decrementExpandCounter();
-			} else if (0 < b.getExpandCounter()) {
-				b.setRadius(b.getRadius() - 0.04f);
-				b.decrementExpandCounter();
-			} else if (b.getExpandCounter() == 0) {
-				b.setRadius(0.5f);
-				b.decrementExpandCounter();
-			}
+				// Check if ball is expanding
+				if (25 < b.getExpandCounter()) {
+					b.setRadius(b.getRadius() + 0.04f);
+					b.decrementExpandCounter();
+				} else if (0 < b.getExpandCounter()) {
+					b.setRadius(b.getRadius() - 0.04f);
+					b.decrementExpandCounter();
+				} else if (b.getExpandCounter() == 0) {
+					b.setRadius(0.5f);
+					b.decrementExpandCounter();
+				}
 
-			// Check if ball is minimizing
-			if (75 < b.getMinimizeCounter()) {
-				b.setRadius(b.getRadius() - 0.016f);
-				b.decrementMinimizeCounter();
-			} else if (25 < b.getMinimizeCounter()) {
-				b.decrementMinimizeCounter();
-			} else if (0 < b.getMinimizeCounter()) {
-				b.setRadius(b.getRadius() + 0.016f);
-				b.decrementMinimizeCounter();
-			} else if (b.getExpandCounter() == 0) {
-				b.setRadius(0.5f);
-				b.decrementMinimizeCounter();
-			}
+				// Check if ball is minimizing
+				if (75 < b.getMinimizeCounter()) {
+					b.setRadius(b.getRadius() - 0.016f);
+					b.decrementMinimizeCounter();
+				} else if (25 < b.getMinimizeCounter()) {
+					b.decrementMinimizeCounter();
+				} else if (0 < b.getMinimizeCounter()) {
+					b.setRadius(b.getRadius() + 0.016f);
+					b.decrementMinimizeCounter();
+				} else if (b.getExpandCounter() == 0) {
+					b.setRadius(0.5f);
+					b.decrementMinimizeCounter();
+				}
 
-			// Check if ball is on boost pad
-			float midX = 16f;
-			float midY = 9f;
-			float xPos = b.getBody().getPosition().x;
-			float yPos = b.getBody().getPosition().y;
-			boolean xBoost = xPos > (midX - 1) && xPos < (midX + 1);
-			boolean yBoost = yPos > (midY - 1) && yPos < (midY + 1);
-			if (xBoost && yBoost) {
-				ratio = 3;
-			}
-			// Check if ball is out of bounds
-			if (xPos < 0.5 + b.getRadius()|| xPos > midX * 2 - (0.5 + b.getRadius()) || yPos < 0.5 + b.getRadius() || yPos > midY * 2 - (0.5 + b.getRadius())) {
-				b.getBody().m_type = BodyType.STATIC;
-				b.kill();
-				
-			}
+				// Check if ball is on boost pad
+				float midX = 16f;
+				float midY = 9f;
+				float xPos = b.getBody().getPosition().x;
+				float yPos = b.getBody().getPosition().y;
+				boolean xBoost = xPos > (midX - 1) && xPos < (midX + 1);
+				boolean yBoost = yPos > (midY - 1) && yPos < (midY + 1);
+				if (xBoost && yBoost) {
+					ratio = 2;
+				}
+				// Check if ball is out of bounds
+				if (xPos < 0.5 + b.getRadius() || xPos > midX * 2 - (0.5 + b.getRadius()) || yPos < 0.5 + b.getRadius()
+						|| yPos > midY * 2 - (0.5 + b.getRadius())) {
+					b.getBody().m_type = BodyType.STATIC;
+					b.kill();
 
-			// Calculate and apply force to body depending on mouse position
-			// relative to body position
-			float deltaX = p.getMouseX() - 50;
-			float deltaY = p.getMouseY() - 50;
-			// System.out.println(p.getMouseX());
-			Vec2 impulse = new Vec2(deltaX / ratio, deltaY / ratio);
-			b.getBody().applyForceToCenter(impulse);
+				}
 
-			System.out.println(p.getMouseClick());
-			if (!cooldown) {
-				if (p.getMouseClick() == 0) {
-					b.expand();
-					cooldown = true;
-					cooldownTimer.schedule(new cooldownTimerTask(), 2000);
-				} else if (p.getMouseClick() == 1) {
-					b.minimize();
-					cooldown = true;
-					cooldownTimer.schedule(new cooldownTimerTask(), 5000);
+				// Calculate and apply force to body depending on mouse position
+				// relative to body position
+				float deltaX = p.getMouseX() - 50;
+				float deltaY = p.getMouseY() - 50;
+				// System.out.println(p.getMouseX());
+				Vec2 impulse = new Vec2(deltaX / ratio, deltaY / ratio);
+				b.getBody().applyForceToCenter(impulse);
+				if (!b.isCooldown()) {
+					if (p.getMouseClick() == 0) {
+						b.expand();
+						b.cooldown(2000);
+					} else if (p.getMouseClick() == 1) {
+						b.minimize();
+						b.cooldown(2000);
+					}
 				}
 			}
 
@@ -151,14 +174,7 @@ public class GameWorld {
 	 * 
 	 * @return matrix containing current positions of all bodies
 	 */
-	public static synchronized float[][] getPlayerData() {
+	public synchronized float[][] getPlayerData() {
 		return playerData;
-	}
-
-	private class cooldownTimerTask extends TimerTask {
-		@Override
-		public void run() {
-			cooldown = false;
-		}
 	}
 }
