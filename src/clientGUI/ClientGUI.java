@@ -48,7 +48,6 @@ public class ClientGUI extends Application {
 	private boolean firstDraw = true;
 	private boolean secondDraw = true;
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.WHEAT, Color.BLACK, Color.BLUEVIOLET };
-	private final String[] SCORE_COLORES = {"blue", "red", "green", "wheat", "black", "blueviolet"};
 	private Group root;
 	private Circle[] circles;
 	private final Timeline timeline = new Timeline();
@@ -142,8 +141,6 @@ public class ClientGUI extends Application {
             }
         });
 		
-		createScoreboard();
-		root.getChildren().add(scoreboard);
 		
 		scene.setOnKeyPressed(ke ->{
 			if(ke.getCode() == KeyCode.Q) {
@@ -179,6 +176,8 @@ public class ClientGUI extends Application {
 		stage.show();
 		connectDialog = new ConnectDialog();
 		setup();
+		createScoreboard();
+		root.getChildren().add(scoreboard);
 	}
 	
 	private void createScoreboard() {
@@ -209,6 +208,7 @@ public class ClientGUI extends Application {
 		scoreboard.setPrefWidth(350);
 		scoreboard.setLayoutX(80 + widthMargin);
 		scoreboard.setLayoutY(80 + heightMargin);
+		scoreboard.toFront();
 		scoreboard.setVisible(false);
 		
 		
