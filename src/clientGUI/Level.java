@@ -20,4 +20,5 @@ public abstract class Level {
 	
 	protected abstract void buildLevel();
 	
+	public abstract void update();
 }

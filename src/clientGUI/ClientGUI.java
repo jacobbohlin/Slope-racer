@@ -58,6 +58,8 @@ public class ClientGUI extends Application {
 	private int ability = -1;
 	private VBox scoreboard;
 	private Label[] names, scores;
+	private int boostImageCounter = 0;
+	private Level level;
 	
 
 	public static void main(String[] args) {
@@ -102,6 +104,10 @@ public class ClientGUI extends Application {
 
 			public void handle(ActionEvent t) {
 				// What happens every frame.
+				if(boostImageCounter == 20) {
+					boostImageCounter = 0;
+					level.update();
+				}
 				if (ConnectionInfo.isFirstPacketReceived()) {
 					if(waitDialog.isShowing()) {
 						waitDialog.close();
@@ -115,6 +121,7 @@ public class ClientGUI extends Application {
 					new Thread(new SendTask(getMouseX(), getMouseY(), ability)).start();
 					ability = -1;
 				}
+				boostImageCounter++;
 			}
 		};
 
@@ -246,7 +253,7 @@ public class ClientGUI extends Application {
 		waitDialog.show();
 		ReceiveService rs = new ReceiveService();
 		rs.start();
-		new StandardLevel(root, width, height, widthMargin, heightMargin, RATIO);
+		level = new StandardLevel2(root, width, height, widthMargin, heightMargin, RATIO);
 		timeline.playFromStart();
 	}
 
