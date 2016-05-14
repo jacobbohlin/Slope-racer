@@ -20,7 +20,8 @@ public class WaitForPlayerDialog extends Dialog<Void> {
 			+ " your ball will move to the right regardless of where it is located. \n \n"
 			+ "Press \"Q\" or LEFT mouseclick to MAXIMIZE and \"E\" or RIGHT mouseclick to MINIMIZE. They share a cooldown. \n \n"
 			+ "Press \"TAB\" to show stats. \n \n"
-			+ "Press the \"Start\" button or \"Spacebar\" to start the game or in-game to restart/start new round.";
+			+ "Press the \"Start\" button or \"Spacebar\" to start the game or in-game to restart/start new round. \n \n"
+			+ "Press m to mute/unmute.";
 	
 	public WaitForPlayerDialog() {
 		setTitle("PILCOMANIA"); 
