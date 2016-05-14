@@ -255,7 +255,7 @@ public class ClientGUI extends Application {
 		waitDialog.show();
 		ReceiveService rs = new ReceiveService();
 		rs.start();
-		level = new StandardLevel2(root, width, height, widthMargin, heightMargin, RATIO);
+		level = new StandardLevel(root, width, height, widthMargin, heightMargin, RATIO);
 		timeline.playFromStart();
 	}
 
