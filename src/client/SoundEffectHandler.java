@@ -15,7 +15,7 @@ public class SoundEffectHandler {
 	
 	public static void playSound(String sound) {
 //		System.out.println("inside soundeffecthandlerclass" + sound);
-		if(sound.equals("boostpd") || sound.equals("conball") || sound.equals("expball")) {
+		if(sound.equals("boostpd") || sound.equals("conball") || sound.equals("expball") || sound.equals("soundtr")) {
 			if(!audioClips.get(sound).isPlaying()) {
 				audioClips.get(sound).play();
 			}
@@ -30,5 +30,7 @@ public class SoundEffectHandler {
 		audioClips.put("conball", new AudioClip(new File("contractingball.wav").toURI().toString()));
 		audioClips.put("expball", new AudioClip(new File("expandingball.wav").toURI().toString()));
 		audioClips.put("boinggg", new AudioClip(new File("boing2.wav").toURI().toString()));
+		audioClips.put("soundtr", new AudioClip(new File("soundtrack.wav").toURI().toString()));
+
 	}
 }

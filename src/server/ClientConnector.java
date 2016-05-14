@@ -69,6 +69,7 @@ public class ClientConnector extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		sendSoundEffectCue("soundtr");
 		timer = new Timer();
 		timer.schedule(manager, 1000, 1000 / 60);
 		if (firstStart)
