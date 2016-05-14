@@ -164,7 +164,9 @@ public class ClientGUI extends Application {
 					scores[i+1].setText(playerScores[i]);
 				}
 				scoreboard.setVisible(true);
-			} 
+			} else if(ke.getCode() == KeyCode.M) {
+				seh.mute();
+			}
 		});
 		
 		scene.setOnKeyReleased(ke ->{
