@@ -53,6 +53,7 @@ public class ClientGUI extends Application {
 	private final Timeline timeline = new Timeline();
 	private final float FPS = 1 / 60f;
 	private ConnectDialog connectDialog;
+	private OpenDialog openDialog;
 	private WaitForPlayerDialog waitDialog;
 	private int ability = -1;
 	private VBox scoreboard;
@@ -87,7 +88,7 @@ public class ClientGUI extends Application {
 		RATIO = (float) (height / 18);
 		widthMargin = (SCREEN_WIDTH - width) / 2;
 		heightMargin = (SCREEN_HEIGHT - height) / 2;
-		stage.setTitle("PILCOMANIA");
+		stage.setTitle("Pilcomania");
 		stage.setFullScreen(true);
 		stage.setResizable(false);
 		Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -175,6 +176,8 @@ public class ClientGUI extends Application {
 		stage.setScene(scene);
 		stage.show();
 		connectDialog = new ConnectDialog();
+		openDialog = new OpenDialog(connectDialog);
+		openDialog.showAndWait();
 		setup();
 		createScoreboard();
 		root.getChildren().add(scoreboard);

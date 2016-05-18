@@ -204,9 +204,9 @@ public class ClientConnector extends Thread {
 		}
 	}
 
-	public static void main(String args[]) {
-		ClientConnector connector = new ClientConnector();
-		connector.start();
-	}
+//	public static void main(String args[]) {
+//		ClientConnector connector = new ClientConnector();
+//		connector.start();
+//	}
 
 }

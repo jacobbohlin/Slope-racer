@@ -86,14 +86,14 @@ public class GameWorld {
 	 */
 	public void step() {
 		world.step(1 / 60f, 10, 10);
-		if (playersAlive.size() == 1) {
+		if (playersAlive.size() == 1 && players.size() > 1) {
 			for (Entry<InetAddress, Player> e : playersAlive.entrySet()) {
 				e.getValue().setScore(e.getValue().getScore() + 1);
 				playersAlive.remove(e.getKey());
 			}
 		}
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
-			if (playersAlive.containsKey(e.getKey())) {
+			if (playersAlive.containsKey(e.getKey()) || players.size() == 1) {
 				Player p = e.getValue();
 				MouseBall b = mouseBalls.get(e.getValue().getAddress());
 
