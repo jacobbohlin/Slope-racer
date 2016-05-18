@@ -46,15 +46,7 @@ public class ServerManager extends TimerTask {
 	}
 
 	void startGame() {
-		System.out.println(firstStart);
-		if (!firstStart) {
-			for (Entry<InetAddress, Player> e : connector.getPlayers().entrySet()) {
-				if (!e.getValue().isDead()) {
-					e.getValue().setScore(e.getValue().getScore() + 1);
-				}
-				connector.sendScore();
-			}
-		}
+		connector.sendScore();
 		gameWorld = new GameWorld(connector.getPlayers(), connector);
 	}
 

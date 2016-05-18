@@ -25,8 +25,8 @@ public class GameWorld {
 	private Vec2 gravity;
 	private boolean allowSleepingObjects;
 	private static HashMap<InetAddress, Player> players;
+	private HashMap<InetAddress, Player> playersAlive;
 	private HashMap<InetAddress, MouseBall> mouseBalls;
-	private HashMap<InetAddress, Skier> skiers;
 	private Contact contact;
 	private Body boostPadBody;
 	private Timer cooldownTimer;
@@ -35,45 +35,32 @@ public class GameWorld {
 
 	public GameWorld(HashMap<InetAddress, Player> players, ClientConnector connector) {
 		this.players = players;
+		playersAlive = new HashMap<InetAddress, Player>();
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
+			playersAlive.put(e.getKey(), e.getValue());
+		}
 		cooldownTimer = new Timer();
 
 		cooldown = false;
 		mouseBalls = new HashMap<InetAddress, MouseBall>();
-		skiers = new HashMap<InetAddress, Skier>();
 		playerData = new float[players.size()][3];
 		gravity = new Vec2(0f, 0f);
 		allowSleepingObjects = true;
 		world = new World(gravity);
-		world.setContactListener(new ContactListenerClass(connector)); //Dedicated listener for audio to play on collision
+		world.setContactListener(new ContactListenerClass(connector)); // Dedicated
+																		// listener
+																		// for
+																		// audio
+																		// to
+																		// play
+																		// on
+																		// collision
 		world.setAllowSleep(allowSleepingObjects);
-		createTestWorld();
 		createMouseBalls();
 		this.connector = connector;
-		// createSkiers();
-		
-		
 	}
-	
-	private void createTestWorld() {
-		BodyDef bdef = new BodyDef();
-		bdef.fixedRotation = true;
-		bdef.type = BodyType.DYNAMIC;
-		bdef.position.set(new Vec2(3f, 3f));
-		
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(3, 3);
-		
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = shape;
-		fdef.density = 1.0f;
-		
-		Body body = world.createBody(bdef);
-		body.createFixture(fdef);
-		System.out.println("Created test polygon");
-//		body.createFixture(fdef).setUserData(this);
-	}
-	
-	public World getWorld(){
+
+	public World getWorld() {
 		return world;
 	}
 
@@ -83,26 +70,7 @@ public class GameWorld {
 	private void createMouseBalls() {
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			Player p = e.getValue();
-			int nbr = p.getPlayerNbr();
-			Vec2 position = new Vec2((float)(3 + Math.random()*26),(float)(3 + Math.random()*12));
-//			switch(nbr){
-//			case 0: 
-//				position = new Vec2(3, 3);
-//				break;
-//			case 1:
-//				position = new Vec2(29, 3);
-//				break;
-//			case 2:
-//				position = new Vec2(29, 15);
-//				break;
-//			case 3: 
-//				position = new Vec2(3, 15);
-//				break;
-//			default:
-//				break;
-//				
-//			}
-			
+			Vec2 position = new Vec2((float) (3 + Math.random() * 26), (float) (3 + Math.random() * 12));
 			InetAddress addr = p.getAddress();
 			mouseBalls.put(addr, new MouseBall(position, world));
 		}
@@ -118,10 +86,17 @@ public class GameWorld {
 	 */
 	public void step() {
 		world.step(1 / 60f, 10, 10);
+		if (playersAlive.size() == 1) {
+			for (Entry<InetAddress, Player> e : playersAlive.entrySet()) {
+				e.getValue().setScore(e.getValue().getScore() + 1);
+				playersAlive.remove(e.getKey());
+			}
+		}
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
-			Player p = e.getValue();
-			MouseBall b = mouseBalls.get(e.getValue().getAddress());
-			if (!b.isDead()) {
+			if (playersAlive.containsKey(e.getKey())) {
+				Player p = e.getValue();
+				MouseBall b = mouseBalls.get(e.getValue().getAddress());
+
 				int ratio = 10;
 				playerData[p.getPlayerNbr()][0] = b.getPositionX();
 				playerData[p.getPlayerNbr()][1] = b.getPositionY();
@@ -172,6 +147,7 @@ public class GameWorld {
 						|| yPos > midY * 2 - (0.5 + b.getRadius())) {
 					b.getBody().m_type = BodyType.STATIC;
 					b.kill();
+					playersAlive.remove(e.getKey());
 					connector.sendSoundEffectCue("bwdeath");
 				}
 
@@ -190,6 +166,7 @@ public class GameWorld {
 						b.minimize();
 						b.cooldown(2000);
 					}
+
 				}
 			}
 

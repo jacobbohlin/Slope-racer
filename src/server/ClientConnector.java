@@ -186,7 +186,7 @@ public class ClientConnector extends Thread {
 		int[] scores = new int[players.size()];
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			scores[e.getValue().getPlayerNbr()] = e.getValue().getScore();
-			System.out.println(e.getValue().getScore());
+			System.out.println(e.getValue().getName() + " " + e.getValue().getScore());
 		}
 		for (int i : scores) {
 			sb.append(";" + i);
