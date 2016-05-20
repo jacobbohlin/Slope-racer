@@ -166,8 +166,8 @@ public class ClientConnector extends Thread {
 	public void sendStartMessage() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("start");
-		for (Entry<InetAddress, Player> e : players.entrySet()) {
-			sb.append(";" + e.getValue().getName());
+		for (String s : getSortedNames()) {
+			sb.append(";" + s);
 		}
 		byte[] buf = sb.toString().getBytes();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -185,8 +185,8 @@ public class ClientConnector extends Thread {
 	private void sendNameMessage() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("names");
-		for (Entry<InetAddress, Player> e : players.entrySet()) {
-			sb.append(";" + e.getValue().getName());
+		for (String s : getSortedNames()) {
+			sb.append(";" + s);
 		}
 		byte[] buf = sb.toString().getBytes();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -225,9 +225,12 @@ public class ClientConnector extends Thread {
 		}
 	}
 
-//	public static void main(String args[]) {
-//		ClientConnector connector = new ClientConnector();
-//		connector.start();
-//	}
+	private String[] getSortedNames() {
+		String[] names = new String[players.size()];
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
+			names[e.getValue().getPlayerNbr()] = e.getValue().getName();
+		}
+		return names;
+	}
 
 }

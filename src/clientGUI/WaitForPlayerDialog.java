@@ -71,5 +71,6 @@ public class WaitForPlayerDialog extends Dialog<Void> {
 			sb.append(name + " connected\n");
 		}
 		playerList.setText(sb.toString());
+		getDialogPane().getScene().getWindow().sizeToScene();
 	}
 }
