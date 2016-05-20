@@ -22,6 +22,7 @@ public class WaitForPlayerDialog extends Dialog<Void> {
 			+ "Press \"TAB\" to show stats. \n \n"
 			+ "Press the \"Start\" button or \"Spacebar\" to start the game or in-game to restart/start new round. \n \n"
 			+ "Press m to mute/unmute.";
+	private Label playerList;
 	
 	public WaitForPlayerDialog() {
 		setTitle("PILCOMANIA"); 
@@ -44,18 +45,31 @@ public class WaitForPlayerDialog extends Dialog<Void> {
 		closeButton.setOnAction((Event) -> {
 			System.exit(0);
 		});
+		closeButton.setText("Quit");
 		
 		
 		startMessage.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
 		startMessage.setMinWidth(getWidth());
 		final Label instructions = new Label(message);
+		playerList = new Label();
+		playerList.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
 		final BorderPane layout = new BorderPane();
 		layout.setTop(startMessage);
 		layout.setCenter(instructions);
+		layout.setBottom(playerList);
 		layout.setPadding(new Insets(15));
 		BorderPane.setMargin(startMessage, new Insets(0, 0, 25, 0));
 		BorderPane.setMargin(instructions, new Insets(0, 0, 25, 0));
+		BorderPane.setMargin(playerList, new Insets(0, 0, 25, 0));
 		BorderPane.setAlignment(startMessage, Pos.CENTER);
 		getDialogPane().setContent(layout);
+	}
+	
+	public void showConnectedPlayers() {
+		StringBuilder sb = new StringBuilder();
+		for(String name : ConnectionInfo.getPlayerNames()) {
+			sb.append(name + " connected\n");
+		}
+		playerList.setText(sb.toString());
 	}
 }

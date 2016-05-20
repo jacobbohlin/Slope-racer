@@ -8,7 +8,6 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 public class StandardLevel extends Level {
-//	private Image[] boostImages;= {new Image("file:BoostPad0.png"), new Image("file:BoostPad1.png"),  new Image("file:BoostPad2.png"), new Image("file:BoostPad3.png")};
 	private Image[] boostImages;
 	private int whichImage = 0;
 	private Rectangle boostPad;

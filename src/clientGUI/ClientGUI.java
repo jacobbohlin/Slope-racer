@@ -20,15 +20,12 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -36,8 +33,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -48,6 +43,7 @@ public class ClientGUI extends Application {
 	private boolean firstDraw = true;
 	private boolean secondDraw = true;
 	private final Color[] COLORES = { Color.BLUE, Color.RED, Color.GREEN, Color.WHEAT, Color.BLACK, Color.BLUEVIOLET };
+	private final Image icon = new Image("file:icon.png"); 
 	private Group root;
 	private Circle[] circles;
 	private final Timeline timeline = new Timeline();
@@ -69,7 +65,10 @@ public class ClientGUI extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		root = new Group();
-		
+		stage.setOnCloseRequest((Event) -> { 
+			System.exit(0);
+		});
+		stage.getIcons().add(icon);
 		SoundEffectHandler seh = new SoundEffectHandler();
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		final double SCREEN_WIDTH = screen.getWidth();
@@ -107,6 +106,9 @@ public class ClientGUI extends Application {
 				if(boostImageCounter == 20) {
 					boostImageCounter = 0;
 					level.update();
+				}
+				if(waitDialog.isShowing()) {
+					waitDialog.showConnectedPlayers();
 				}
 				if (ConnectionInfo.isFirstPacketReceived()) {
 					if(waitDialog.isShowing()) {

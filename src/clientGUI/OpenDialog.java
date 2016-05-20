@@ -22,11 +22,13 @@ public class OpenDialog extends Dialog<Void>  {
 		closeButton.setOnAction((Event) -> {
 			System.exit(0);
 		});
+		closeButton.setText("Quit");
 		
 		Button createServerButton = (Button) getDialogPane().lookupButton(createButtonType);
 		createServerButton.setOnAction((Event) -> {
 			new ClientConnector().start();
 			dialog.createServer();
-		});
+		});		
+		getDialogPane().setMinWidth(400);
 	}
 }

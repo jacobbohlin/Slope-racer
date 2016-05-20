@@ -3,6 +3,7 @@ package clientGUI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URL;
 
 import javafx.geometry.Insets;
@@ -60,6 +61,7 @@ public class ConnectDialog extends Dialog<Void> {
 		closeButton.setOnAction((Event) -> {
 			System.exit(0);
 		});
+		closeButton.setText("Quit");
 		getDialogPane().setContent(grid);
 	}
 	
@@ -110,7 +112,7 @@ public class ConnectDialog extends Dialog<Void> {
 	public void createServer() {
 		try {
 			String ip = getIp();
-			setHeaderText("Your servers IP is: " + ip);
+			setHeaderText("Your servers IP is: " + ip + "\nYour local IP is: " + InetAddress.getLocalHost().getHostAddress());
 		} catch (Exception e) {
 			setHeaderText("Your IP couldn't be fetched automatically.");
 			e.printStackTrace();

@@ -86,6 +86,7 @@ public class ClientConnector extends Thread {
 		}
 		Player p = players.get(dp.getAddress());
 		sendAck(p);
+		sendNameMessage();
 	}
 
 	private void update(String input) throws IOException {
@@ -134,6 +135,7 @@ public class ClientConnector extends Thread {
 			System.out.println("Something went wrong while sending ACK");
 			e.printStackTrace();
 		}
+		sendNameMessage();
 	}
 	
 	public void sendSoundEffectCue(String soundEffect) {
@@ -164,6 +166,25 @@ public class ClientConnector extends Thread {
 	public void sendStartMessage() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("start");
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
+			sb.append(";" + e.getValue().getName());
+		}
+		byte[] buf = sb.toString().getBytes();
+		DatagramPacket packet = new DatagramPacket(buf, buf.length);
+		for (Entry<InetAddress, Player> e : players.entrySet()) {
+			packet.setAddress(e.getKey());
+			packet.setPort(e.getValue().getPort());
+			try {
+				socket.send(packet);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	private void sendNameMessage() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("names");
 		for (Entry<InetAddress, Player> e : players.entrySet()) {
 			sb.append(";" + e.getValue().getName());
 		}
